@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="topbar">
+            <div>
+                <h1>Contact Manager</h1>
+                <p>Save and manage contacts with ease.</p>
+            </div>
+            <button id="themeToggle" class="btn secondary">🌙</button>
+        </header>
+
+        <section class="input-card">
+            <div class="input-row">
+                <input type="text" id="nameInput" placeholder="Name" autocomplete="name">
+                <input type="tel" id="phoneInput" placeholder="Phone number" autocomplete="tel">
+                <button id="addContactBtn" class="btn primary">Add Contact</button>
+            </div>
+            <div class="status" id="statusMsg"></div>
+        </section>
+
+        <section class="search-card">
+            <input type="text" id="searchInput" placeholder="Search contacts...">
+        </section>
+
+        <section class="list-card">
+            <h2>Saved Contacts</h2>
+            <ul id="contactsList"></ul>
+        </section>
+    </div>
+
+    <div id="editModal" class="modal hidden">
+        <div class="modal-box">
+            <h2>Edit Contact</h2>
+            <input type="text" id="editName" placeholder="Name">
+            <input type="tel" id="editPhone" placeholder="Phone number">
+            <div class="modal-actions">
+                <button id="cancelEdit" class="btn secondary">Cancel</button>
+                <button id="saveEdit" class="btn primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

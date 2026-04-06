@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App with Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <div class="auth-container" id="authContainer">
+            <h1>To-Do App</h1>
+            <p>Register or log in to manage your personal tasks.</p>
+
+            <div class="tabs">
+                <button class="tab active" id="loginTab">Login</button>
+                <button class="tab" id="registerTab">Register</button>
+            </div>
+
+            <div class="form-card" id="loginFormContainer">
+                <h2>Login</h2>
+                <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+                <button class="btn" id="loginBtn">Login</button>
+                <p class="status" id="loginStatus"></p>
+            </div>
+
+            <div class="form-card hidden" id="registerFormContainer">
+                <h2>Register</h2>
+                <input type="text" id="registerUsername" placeholder="Username" autocomplete="username">
+                <input type="password" id="registerPassword" placeholder="Password" autocomplete="new-password">
+                <button class="btn" id="registerBtn">Register</button>
+                <p class="status" id="registerStatus"></p>
+            </div>
+        </div>
+
+        <div class="todo-container hidden" id="todoContainer">
+            <header class="todo-header">
+                <div>
+                    <h1>Your Tasks</h1>
+                    <p>Logged in as <span id="welcomeUser"></span></p>
+                </div>
+                <div>
+                    <button class="btn secondary" id="themeToggle">🌙</button>
+                    <button class="btn danger" id="logoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <section class="task-input">
+                <input type="text" id="taskTitle" placeholder="Task title">
+                <input type="text" id="taskDesc" placeholder="Task description">
+                <button class="btn primary" id="addTaskBtn">Add Task</button>
+                <p class="status" id="taskStatus"></p>
+            </section>
+
+            <section class="task-list">
+                <div class="task-filter">
+                    <input type="text" id="searchTask" placeholder="Search tasks...">
+                </div>
+                <ul id="tasksUl"></ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

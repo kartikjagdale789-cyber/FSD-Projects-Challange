@@ -1,0 +1,45 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e5e9f2; color: #1f2937; min-height: 100vh; transition: background 0.4s ease, color 0.4s ease; }
+body.dark { background: #111827; color: #e5e7eb; }
+.app-container { max-width: 900px; margin: 2rem auto; padding: 1rem; }
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem 1.25rem; border-radius: 12px; box-shadow: 0 10px 28px rgba(17, 24, 39, 0.12); background: #fff; transition: background 0.4s ease, box-shadow 0.4s ease; }
+body.dark .app-header { background: #1f2937; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
+.app-header h1 { margin-bottom: 0.3rem; font-size: 1.8rem; }
+.app-header p { opacity: .8; }
+.controls { background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 10px 28px rgba(17, 24, 39, 0.12); margin-bottom: 1rem; transition: background 0.4s ease; }
+body.dark .controls { background: #1f2937; }
+textarea, input[type='text'] { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.85rem; margin-bottom: 0.75rem; font-size: 1rem; resize: vertical; transition: border-color 0.3s ease, background 0.4s ease, color 0.4s ease; }
+body.dark textarea, body.dark input[type='text'] { background: #111827; color: #e5e7eb; border-color: #374151; }
+textarea:focus, input[type='text']:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); }
+.input-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
+.btn { border: none; border-radius: 10px; padding: 0.74rem 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(30, 41, 59, 0.15); }
+.primary-btn { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; }
+.toggle-btn { background: #f3f4f6; color: #1f2937; }
+body.dark .toggle-btn { background: #374151; color: #e5e7eb; }
+#searchInput { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 10px; margin-top: 0.5rem; }
+.notes-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.note-card { background: #fff; border-radius: 12px; box-shadow: 0 10px 20px rgba(17, 24, 39, 0.10); padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; position: relative; min-height: 150px; transform: translateY(0); animation: noteAppear 0.25s ease; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+body.dark .note-card { background: #111827; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); }
+.note-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(17, 24, 39, 0.2); }
+.note-title { font-size: 1.1rem; font-weight: 700; }
+.note-meta { font-size: 0.8rem; color: #6b7280; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.2rem; }
+body.dark .note-meta { color: #d1d5db; }
+.note-content { white-space: pre-wrap; overflow-wrap: break-word; color: #334155; }
+body.dark .note-content { color: #d1d5db; }
+.note-actions { display: flex; justify-content: flex-end; gap: 0.4rem; }
+.note-actions button { padding: 0.4rem 0.65rem; font-size: 0.8rem; border-radius: 8px; }
+.edit-btn { background: #fcd34d; color: #1f2937; }
+.delete-btn { background: #ef4444; color: #fff; }
+.modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: grid; place-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+.modal.visible { opacity: 1; pointer-events: all; }
+.modal-box { width: min(90%, 500px); background: #fff; border-radius: 14px; padding: 1.25rem; box-shadow: 0 14px 32px rgba(15, 23, 42, 0.25); display: grid; gap: 0.75rem; }
+body.dark .modal-box { background: #1f2937; color: #e5e7eb; }
+.modal-box h2 { margin-bottom: 0.5rem; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.hidden { display: none; }
+@media (max-width: 768px) { .notes-grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .app-container { margin: 1rem; } }
+@keyframes noteAppear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+.success-notice { position: fixed; top: 18px; right: 18px; background: #16a34a; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; z-index: 200; font-size: 0.9rem; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.2); opacity: 0; animation: showNotice 0.25s forwards; }
+@keyframes showNotice { to { opacity: 1; } }

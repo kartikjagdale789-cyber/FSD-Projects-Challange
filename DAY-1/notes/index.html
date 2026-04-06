@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Notes Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div>
+                <h1>Notes Manager</h1>
+                <p>Write, save, search and manage notes effortlessly.</p>
+            </div>
+            <button id="themeToggle" class="btn toggle-btn">🌙</button>
+        </header>
+
+        <section class="controls">
+            <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+            <div class="input-row">
+                <input type="text" id="noteTitle" placeholder="Note title" />
+                <button id="saveNoteBtn" class="btn primary-btn">Add Note</button>
+            </div>
+            <input id="searchInput" type="text" placeholder="Search notes by title or content" />
+        </section>
+
+        <section class="notes-section">
+            <div id="notesContainer" class="notes-grid"></div>
+        </section>
+
+        <div id="editModal" class="modal hidden">
+            <div class="modal-box">
+                <h2>Edit Note</h2>
+                <input id="editTitle" type="text" placeholder="Note title" />
+                <textarea id="editContent" rows="5" placeholder="Note content..."></textarea>
+                <div class="modal-actions">
+                    <button id="cancelEdit" class="btn">Cancel</button>
+                    <button id="saveEdit" class="btn primary-btn">Save</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

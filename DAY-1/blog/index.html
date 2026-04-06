@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Blog Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Personal Blog</h1>
+            <p>Share your thoughts and ideas</p>
+        </header>
+
+        <main>
+            <section class="add-post">
+                <h2>Add New Post</h2>
+                <form id="blogForm">
+                    <div class="form-group">
+                        <input type="text" id="postTitle" placeholder="Post Title" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="postContent" placeholder="Write your blog post here..." rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publish Post</button>
+                </form>
+            </section>
+
+            <section class="posts">
+                <h2>All Posts</h2>
+                <div id="postsContainer">
+                    <!-- Blog posts will be displayed here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Personal Blog Platform. Built with HTML, CSS & JavaScript.</p>
+        </footer>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Post</h2>
+            <form id="editForm">
+                <div class="form-group">
+                    <input type="text" id="editTitle" placeholder="Post Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="editContent" placeholder="Edit your blog post..." rows="6" required></textarea>
+                </div>
+                <button type="submit" class="btn">Update Post</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
