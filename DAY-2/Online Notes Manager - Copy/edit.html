@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Notes Manager - Edit Note</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <h1 class="brand">Online Notes Manager</h1>
+        <nav class="nav-links">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="add.html">Add Note</a>
+          <button id="themeToggle" type="button">Dark Mode</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <h2 class="page-title">Edit Note</h2>
+
+      <form id="editNoteForm" class="form-card">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input id="title" type="text" placeholder="Update note title" maxlength="100" />
+        </div>
+
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea id="content" placeholder="Update your note..."></textarea>
+          <div id="charCounter" class="counter">0 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input id="date" type="date" />
+        </div>
+
+        <p id="formError" class="error"></p>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Update Note</button>
+          <a class="btn" href="index.html">Cancel</a>
+        </div>
+      </form>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Quiz Application | Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="admin">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">QuizMaster</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="result.html">Result</a></li>
+        <li><a href="admin.html" class="active">Admin</a></li>
+        <li><button id="themeToggle" class="theme-toggle" type="button">Dark Mode</button></li>
+      </ul>
+      <button id="menuBtn" class="menu-btn" type="button">Menu</button>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card admin-card">
+      <h1>Add Question</h1>
+      <form id="adminForm">
+        <label for="questionInput">Question Text</label>
+        <input id="questionInput" required />
+
+        <label for="option1">Option 1</label>
+        <input id="option1" required />
+
+        <label for="option2">Option 2</label>
+        <input id="option2" required />
+
+        <label for="option3">Option 3</label>
+        <input id="option3" required />
+
+        <label for="option4">Option 4</label>
+        <input id="option4" required />
+
+        <label for="correctOption">Correct Answer (1-4)</label>
+        <input id="correctOption" type="number" min="1" max="4" required />
+
+        <label for="adminDifficulty">Difficulty</label>
+        <select id="adminDifficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <label for="adminCategory">Category</label>
+        <input id="adminCategory" placeholder="Example: JavaScript" required />
+
+        <button class="btn-primary" type="submit">Add Question</button>
+      </form>
+      <p id="adminMessage" class="muted"></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

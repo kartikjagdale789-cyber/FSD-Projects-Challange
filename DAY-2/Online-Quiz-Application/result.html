@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Quiz Application | Result</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="result">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">QuizMaster</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="result.html" class="active">Result</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><button id="themeToggle" class="theme-toggle" type="button">Dark Mode</button></li>
+      </ul>
+      <button id="menuBtn" class="menu-btn" type="button">Menu</button>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card result-card">
+      <h1>Your Quiz Result</h1>
+      <p id="scoreText">Score: 0</p>
+      <p id="summaryText"></p>
+      <div class="action-row">
+        <a class="btn-secondary" href="index.html">Back to Home</a>
+        <a class="btn-primary" href="quiz.html">Retake Quiz</a>
+      </div>
+    </section>
+
+    <section class="card review-card">
+      <h2>Correct vs Wrong Answers</h2>
+      <div id="reviewContainer"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

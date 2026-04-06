@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App - Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="login">
+    <main class="auth-layout">
+      <section class="auth-card">
+        <h1>Welcome Back</h1>
+        <p class="muted">Login to manage your personal tasks.</p>
+
+        <form id="loginForm" class="form">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" placeholder="you@example.com" required />
+
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" placeholder="Minimum 6 characters" required />
+
+          <p id="loginError" class="error"></p>
+
+          <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+
+        <p class="switch-link">
+          New user?
+          <a href="signup.html">Create an account</a>
+        </p>
+      </section>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

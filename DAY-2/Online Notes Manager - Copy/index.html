@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Notes Manager - Home</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <h1 class="brand">Online Notes Manager</h1>
+        <nav class="nav-links">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="add.html">Add Note</a>
+          <button id="themeToggle" type="button">Dark Mode</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <h2 class="page-title">All Notes</h2>
+
+      <section class="controls">
+        <input
+          class="input"
+          id="searchInput"
+          type="text"
+          placeholder="Search by title or content..."
+        />
+        <input class="input" id="dateFilter" type="date" />
+      </section>
+
+      <section id="notesContainer" class="notes-grid"></section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

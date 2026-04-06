@@ -1,0 +1,13 @@
+{
+  "name": "personal-blog-platform",
+  "version": "1.0.0",
+  "description": "Beginner-friendly full-stack personal blog platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

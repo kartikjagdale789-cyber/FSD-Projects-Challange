@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener | Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="home">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">Shortly</a>
+      <div class="nav-actions">
+        <a href="index.html" class="active">Home</a>
+        <a href="result.html">Result</a>
+        <button id="themeToggle" class="theme-btn" type="button">Dark Mode</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card form-card">
+      <h1>URL Shortener</h1>
+      <p>Convert long URLs into short, shareable links.</p>
+
+      <form id="shortenForm">
+        <label for="longUrl">Long URL</label>
+        <input id="longUrl" type="url" placeholder="https://example.com/some/very/long/url" required />
+
+        <label for="customCode">Custom Short Code (Optional)</label>
+        <input id="customCode" type="text" placeholder="mycode" maxlength="20" />
+
+        <button class="btn-primary" type="submit">Shorten URL</button>
+        <small id="formMessage" class="message"></small>
+      </form>
+    </section>
+
+    <section class="card history-card">
+      <h2>Shortened URL History</h2>
+      <div id="urlList"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

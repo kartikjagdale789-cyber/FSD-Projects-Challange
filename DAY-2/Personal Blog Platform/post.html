@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Blog Platform | View Post</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="post">
+    <header class="site-header">
+      <nav class="navbar container">
+        <a class="logo" href="index.html">Personal Blog Platform</a>
+        <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">Menu</button>
+        <div id="nav-links" class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="create.html">Create Post</a>
+          <a href="about.html">About</a>
+          <button id="theme-toggle" class="btn btn-secondary" type="button">Dark Mode</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container page-content">
+      <article id="post-container" class="card single-post"></article>
+
+      <section id="edit-panel" class="card form-card hidden">
+        <h2>Edit Post</h2>
+        <form id="edit-post-form" novalidate>
+          <div class="field-group">
+            <label for="edit-title">Title</label>
+            <input id="edit-title" name="title" type="text" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-author">Author</label>
+            <input id="edit-author" name="author" type="text" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-content">Content</label>
+            <textarea id="edit-content" name="content" rows="10" required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn" type="submit">Save Changes</button>
+            <button id="cancel-edit" class="btn btn-secondary" type="button">Cancel</button>
+          </div>
+        </form>
+        <p id="edit-message" class="form-message"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>Read, update, or remove posts from this page.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

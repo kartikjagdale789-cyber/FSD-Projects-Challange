@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App - Signup</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="signup">
+    <main class="auth-layout">
+      <section class="auth-card">
+        <h1>Create Account</h1>
+        <p class="muted">Signup and start organizing your day.</p>
+
+        <form id="signupForm" class="form">
+          <label for="signupUsername">Username</label>
+          <input id="signupUsername" type="text" placeholder="Your name" required />
+
+          <label for="signupEmail">Email</label>
+          <input id="signupEmail" type="email" placeholder="you@example.com" required />
+
+          <label for="signupPassword">Password</label>
+          <input id="signupPassword" type="password" placeholder="Minimum 6 characters" required />
+
+          <p id="signupError" class="error"></p>
+
+          <button class="btn btn-primary" type="submit">Signup</button>
+        </form>
+
+        <p class="switch-link">
+          Already have an account?
+          <a href="login.html">Login</a>
+        </p>
+      </section>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

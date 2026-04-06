@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Quiz Application | Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="home">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">QuizMaster</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="result.html">Result</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><button id="themeToggle" class="theme-toggle" type="button">Dark Mode</button></li>
+      </ul>
+      <button id="menuBtn" class="menu-btn" type="button">Menu</button>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card intro-card">
+      <h1>Online Quiz Application</h1>
+      <p>Practice multiple-choice questions and see your score instantly.</p>
+
+      <div class="option-grid">
+        <div>
+          <label for="playerName">Your Name</label>
+          <input id="playerName" type="text" placeholder="Enter your name" />
+        </div>
+
+        <div>
+          <label for="difficultySelect">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="all">All</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="categorySelect">Category</label>
+          <select id="categorySelect">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="startQuizBtn" class="btn-primary" type="button">Start Quiz</button>
+        <button id="randomOrderBtn" class="btn-secondary" type="button">Random Order: On</button>
+      </div>
+    </section>
+
+    <section class="card leaderboard-card">
+      <h2>Leaderboard</h2>
+      <div id="leaderboardContainer"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

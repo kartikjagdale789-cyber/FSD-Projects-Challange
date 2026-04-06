@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App - Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <h1 class="brand">To-Do Dashboard</h1>
+        <nav class="nav-actions">
+          <span id="welcomeUser" class="welcome-user"></span>
+          <button id="themeToggle" class="btn" type="button">Dark Mode</button>
+          <button id="logoutBtn" class="btn btn-danger" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page-space">
+      <section class="task-form-card">
+        <h2>Add New Task</h2>
+
+        <form id="taskForm" class="task-form-grid">
+          <input id="taskTitle" type="text" placeholder="Task title" required />
+
+          <input id="taskDueDate" type="date" />
+
+          <select id="taskPriority">
+            <option value="Low">Low Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="High">High Priority</option>
+          </select>
+
+          <button class="btn btn-primary" type="submit">Add Task</button>
+        </form>
+        <p id="taskError" class="error"></p>
+      </section>
+
+      <section class="toolbar">
+        <input id="taskSearch" type="text" placeholder="Search tasks..." />
+        <select id="taskFilter">
+          <option value="All">All</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </section>
+
+      <section>
+        <h3>Pending Tasks</h3>
+        <div id="pendingTasks" class="task-grid"></div>
+      </section>
+
+      <section>
+        <h3>Completed Tasks</h3>
+        <div id="completedTasks" class="task-grid"></div>
+      </section>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

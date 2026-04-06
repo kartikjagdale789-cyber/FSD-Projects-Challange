@@ -1,0 +1,13 @@
+Online Notes Manager - Run Guide
+
+1) Open terminal in this folder.
+2) Install backend packages (only once):
+   npm init -y
+   npm install express cors
+3) Start backend server:
+   node server.js
+4) Open index.html in your browser.
+
+Note:
+- Frontend works with localStorage by default.
+- Backend is optional.

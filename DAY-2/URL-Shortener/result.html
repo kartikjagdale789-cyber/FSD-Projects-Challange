@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener | Result</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="result">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">Shortly</a>
+      <div class="nav-actions">
+        <a href="index.html">Home</a>
+        <a href="result.html" class="active">Result</a>
+        <button id="themeToggle" class="theme-btn" type="button">Dark Mode</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card result-card" id="resultCard">
+      <h1>Short URL Ready</h1>
+      <p><strong>Original URL:</strong> <span id="originalUrlText"></span></p>
+      <p>
+        <strong>Short URL:</strong>
+        <a id="shortUrlLink" href="#" target="_blank" rel="noreferrer"></a>
+      </p>
+      <div class="action-row">
+        <button id="copyBtn" class="btn-secondary" type="button">Copy Short Link</button>
+        <a href="index.html" class="btn-primary">Create Another</a>
+      </div>
+      <small id="copyMessage" class="message"></small>
+
+      <div class="qr-wrap">
+        <h3>QR Code</h3>
+        <img id="qrImage" alt="QR code for short URL" />
+      </div>
+    </section>
+
+    <section id="resultFallback" class="card hidden">
+      <h2>No short URL selected</h2>
+      <p>Please create a short URL first from the home page.</p>
+      <a href="index.html" class="btn-primary">Go to Home</a>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Blog Platform | Create Post</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="create">
+    <header class="site-header">
+      <nav class="navbar container">
+        <a class="logo" href="index.html">Personal Blog Platform</a>
+        <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">Menu</button>
+        <div id="nav-links" class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="create.html" class="active">Create Post</a>
+          <a href="about.html">About</a>
+          <button id="theme-toggle" class="btn btn-secondary" type="button">Dark Mode</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container page-content">
+      <section class="hero compact">
+        <p class="eyebrow">Create</p>
+        <h1>Write a new blog post</h1>
+        <p>Fill in all fields and submit your post. Required fields help keep your blog data clean.</p>
+      </section>
+
+      <section class="card form-card">
+        <form id="create-post-form" novalidate>
+          <div class="field-group">
+            <label for="title">Title</label>
+            <input id="title" name="title" type="text" maxlength="120" required />
+            <small class="hint">Max 120 characters</small>
+          </div>
+
+          <div class="field-group">
+            <label for="author">Author</label>
+            <input id="author" name="author" type="text" maxlength="60" required />
+            <small class="hint">Example: John Doe</small>
+          </div>
+
+          <div class="field-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="10" required></textarea>
+            <small class="hint">Write at least 20 characters</small>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn" type="submit">Publish Post</button>
+            <a class="btn btn-secondary" href="index.html">Cancel</a>
+          </div>
+        </form>
+
+        <p id="form-message" class="form-message"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>Keep writing consistently and your blog will grow over time.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

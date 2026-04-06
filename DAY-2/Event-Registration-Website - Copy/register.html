@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="register">
+  <header class="header">
+    <nav class="nav container">
+      <a href="index.html" class="logo">EventHub</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Register for Event</h1>
+    <form id="registrationForm" class="card">
+      <label>Event</label>
+      <select id="eventSelect"></select>
+
+      <label>Name *</label>
+      <input id="name" required />
+      <small id="nameError" class="error"></small>
+
+      <label>Email *</label>
+      <input id="email" required />
+      <small id="emailError" class="error"></small>
+
+      <label>Phone *</label>
+      <input id="phone" required />
+      <small id="phoneError" class="error"></small>
+
+      <button type="submit">Submit</button>
+    </form>
+    <div id="confirmation" class="card hidden"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

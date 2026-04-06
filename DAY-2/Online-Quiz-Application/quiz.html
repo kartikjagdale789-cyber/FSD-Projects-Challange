@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Quiz Application | Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="quiz">
+  <header class="header">
+    <nav class="container nav">
+      <a href="index.html" class="logo">QuizMaster</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="quiz.html" class="active">Quiz</a></li>
+        <li><a href="result.html">Result</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><button id="themeToggle" class="theme-toggle" type="button">Dark Mode</button></li>
+      </ul>
+      <button id="menuBtn" class="menu-btn" type="button">Menu</button>
+    </nav>
+  </header>
+
+  <main class="container page">
+    <section class="card quiz-card">
+      <div class="quiz-top">
+        <p id="progressText">Question 1 of 1</p>
+        <p id="timerText">Time left: 00:00</p>
+      </div>
+
+      <div class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <h2 id="questionText"></h2>
+      <div id="optionsContainer" class="options-grid"></div>
+      <small id="validationText" class="error-text"></small>
+
+      <div class="action-row">
+        <button id="prevBtn" class="btn-secondary" type="button">Previous</button>
+        <button id="nextBtn" class="btn-secondary" type="button">Next</button>
+        <button id="submitBtn" class="btn-primary" type="button">Submit Quiz</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
