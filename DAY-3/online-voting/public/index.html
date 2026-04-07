@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Voting System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>Online Voting System</h1>
+        <p>One vote per user with instant result updates.</p>
+      </header>
+
+      <section class="panel">
+        <h2>Cast Your Vote</h2>
+        <label for="username">Username</label>
+        <input id="username" type="text" placeholder="Enter your username" />
+        <div id="candidate-list" class="candidate-list"></div>
+        <p id="message" class="message"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Live Results</h2>
+        <div id="results-list" class="results-list"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

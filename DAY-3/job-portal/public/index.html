@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Application Portal</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>Job Application Portal</h1>
+        <p>Submit applications and manage them in a simple admin view.</p>
+      </header>
+
+      <section class="panel">
+        <h2>Apply for Job</h2>
+        <form id="application-form">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" placeholder="Enter your full name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="resumeLink">Resume Link</label>
+          <input id="resumeLink" name="resumeLink" type="url" placeholder="https://example.com/resume" required />
+
+          <button type="submit">Submit Application</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Admin View - Applications</h2>
+        <div id="applications-list" class="applications-list"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

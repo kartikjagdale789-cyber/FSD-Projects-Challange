@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Management System - Edit Contact</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="edit">
+    <header class="navbar">
+      <div class="container nav-wrap">
+        <h1 class="brand">Contact Management System</h1>
+        <nav class="nav-links">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="add.html">Add Contact</a>
+          <button id="themeToggle" class="btn" type="button">Dark Mode</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page-space">
+      <section class="form-card">
+        <h2>Edit Contact</h2>
+
+        <form id="contactForm" class="form-grid">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" type="text" placeholder="Enter full name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input id="phone" type="text" placeholder="Enter phone number" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="Enter email address" required />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address (Optional)</label>
+            <input id="address" type="text" placeholder="Enter address" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="profileImage">Profile Image (Optional)</label>
+            <input id="profileImage" type="file" accept="image/*" />
+            <img id="imagePreview" class="image-preview hidden" alt="Preview" />
+          </div>
+
+          <p id="formError" class="error full-width"></p>
+
+          <div class="actions full-width">
+            <button class="btn btn-primary" type="submit">Update Contact</button>
+            <a class="btn" href="index.html">Cancel</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Book Library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Online Book Library</h1>
+
+      <section class="panel">
+        <h2>Add Book</h2>
+        <form id="book-form">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" placeholder="Book title" required />
+
+          <label for="author">Author</label>
+          <input id="author" name="author" type="text" placeholder="Author name" required />
+
+          <button type="submit">Add Book</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Search</h2>
+        <input id="search-input" type="text" placeholder="Search by title or author" />
+      </section>
+
+      <section class="panel">
+        <h2>Books</h2>
+        <div id="book-list" class="book-list"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

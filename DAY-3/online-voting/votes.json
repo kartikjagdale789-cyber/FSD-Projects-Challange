@@ -1,0 +1,13 @@
+{
+  "candidates": [
+    "Alice Johnson",
+    "Brian Lee",
+    "Carla Gomez"
+  ],
+  "votes": {
+    "Alice Johnson": 0,
+    "Brian Lee": 0,
+    "Carla Gomez": 0
+  },
+  "votedUsers": []
+}

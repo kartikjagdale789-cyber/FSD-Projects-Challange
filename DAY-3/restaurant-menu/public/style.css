@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.container {
+  width: min(1000px, 92%);
+  margin: 2rem auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.header p {
+  color: #4b5563;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+input,
+button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+button {
+  border: none;
+  background: #059669;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #047857;
+}
+
+.menu-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.menu-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  padding: 0.9rem;
+}
+
+.menu-card h3 {
+  margin: 0 0 0.4rem;
+}
+
+.menu-card p {
+  margin: 0 0 0.8rem;
+  color: #374151;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.empty-text {
+  color: #6b7280;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 1rem auto;
+  }
+
+  .panel {
+    padding: 0.85rem;
+  }
+}
