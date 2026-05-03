@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Expense Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e2f0;
+    --muted: #5a5a78;
+    --green: #2eca8b;
+    --red: #f0545a;
+    --blue: #4a9eff;
+    --yellow: #f5c542;
+    --purple: #9b6dff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .layout {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+  }
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .logo span { color: var(--green); }
+  .month-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+  }
+
+  /* Summary cards */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .sum-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .sum-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .sum-card.income::before { background: var(--green); }
+  .sum-card.expense::before { background: var(--red); }
+  .sum-card.balance::before { background: var(--blue); }
+  .sum-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.7rem;
+  }
+  .sum-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .sum-card.income .sum-val { color: var(--green); }
+  .sum-card.expense .sum-val { color: var(--red); }
+  .sum-card.balance .sum-val { color: var(--blue); }
+  .sum-change {
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Bar chart */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .chart-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: 100px;
+  }
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .bar-stacks {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 80px;
+    gap: 2px;
+  }
+  .bar-fill {
+    border-radius: 3px 3px 0 0;
+    transition: height 0.5s ease;
+    min-height: 2px;
+  }
+  .bar-fill.income-bar { background: var(--green); opacity: 0.7; }
+  .bar-fill.expense-bar { background: var(--red); opacity: 0.7; }
+  .bar-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+  }
+
+  /* Transaction list */
+  .tx-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-head h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tx-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+  }
+  .tx-list { max-height: 400px; overflow-y: auto; }
+  .tx-list::-webkit-scrollbar { width: 4px; }
+  .tx-list::-webkit-scrollbar-track { background: transparent; }
+  .tx-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  .tx-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    animation: txIn 0.25s ease forwards;
+    opacity: 0;
+  }
+  @keyframes txIn { to { opacity: 1; } }
+  .tx-item:hover { background: rgba(255,255,255,0.02); }
+  .tx-item:last-child { border-bottom: none; }
+  .tx-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tx-cat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .tx-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .tx-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+    opacity: 0.4;
+    transition: opacity 0.15s, color 0.15s;
+    padding: 0.2rem;
+  }
+  .tx-del:hover { opacity: 1; color: var(--red); }
+
+  /* Add form */
+  .add-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    height: fit-content;
+  }
+  .add-panel h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+
+  .type-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .type-btn {
+    padding: 0.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .type-btn.active-income { background: rgba(46,202,139,0.12); border-color: var(--green); color: var(--green); }
+  .type-btn.active-expense { background: rgba(240,84,90,0.12); border-color: var(--red); color: var(--red); }
+
+  .field { margin-bottom: 1rem; }
+  .field label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .field input, .field select {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: rgba(74,158,255,0.5); }
+  .field select option { background: #1a1a24; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--green);
+    border: none;
+    border-radius: 8px;
+    color: #0a0a0f;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:active { transform: scale(0.98); }
+
+  /* Category legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+  .legend-dot { width: 6px; height: 6px; border-radius: 99px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="top-bar">
+    <div class="logo">Led<span>_</span>ger</div>
+    <div class="month-badge" id="monthBadge">Loading…</div>
+  </div>
+
+  <div class="summary">
+    <div class="sum-card income">
+      <div class="sum-label">Total Income</div>
+      <div class="sum-val" id="incomeVal">₹0</div>
+      <div class="sum-change">This month</div>
+    </div>
+    <div class="sum-card expense">
+      <div class="sum-label">Total Expenses</div>
+      <div class="sum-val" id="expenseVal">₹0</div>
+      <div class="sum-change">This month</div>
+    </div>
+    <div class="sum-card balance">
+      <div class="sum-label">Net Balance</div>
+      <div class="sum-val" id="balanceVal">₹0</div>
+      <div class="sum-change">Available</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">Monthly Overview — Last 6 months</div>
+    <div class="bars" id="chartBars"></div>
+  </div>
+
+  <div class="main-grid">
+    <div class="tx-panel">
+      <div class="panel-head">
+        <h3>Transactions</h3>
+        <div class="tx-count" id="txCount">0 entries</div>
+      </div>
+      <div class="tx-list" id="txList"></div>
+    </div>
+
+    <div class="add-panel">
+      <h3>Add Entry</h3>
+      <div class="type-toggle">
+        <button class="type-btn active-income" id="btnIncome" onclick="setType('income')">+ Income</button>
+        <button class="type-btn" id="btnExpense" onclick="setType('expense')">− Expense</button>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="desc" placeholder="e.g. Salary, Grocery…">
+      </div>
+      <div class="field">
+        <label>Amount (₹)</label>
+        <input type="number" id="amount" placeholder="0.00" min="0">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="category">
+          <option value="💼 Work">💼 Work</option>
+          <option value="🛒 Food">🛒 Food</option>
+          <option value="🚗 Transport">🚗 Transport</option>
+          <option value="🏠 Housing">🏠 Housing</option>
+          <option value="🎮 Entertainment">🎮 Entertainment</option>
+          <option value="💊 Health">💊 Health</option>
+          <option value="📚 Education">📚 Education</option>
+          <option value="💰 Investment">💰 Investment</option>
+          <option value="🛍 Shopping">🛍 Shopping</option>
+          <option value="✈ Travel">✈ Travel</option>
+        </select>
+      </div>
+      <button class="submit-btn" onclick="addTransaction()">Add Transaction</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let txType = 'income';
+let transactions = [
+  { id: 1, type: 'income', desc: 'Monthly Salary', amount: 65000, cat: '💼 Work', date: new Date() },
+  { id: 2, type: 'expense', desc: 'Grocery Shopping', amount: 3200, cat: '🛒 Food', date: new Date() },
+  { id: 3, type: 'expense', desc: 'Rent', amount: 18000, cat: '🏠 Housing', date: new Date() },
+  { id: 4, type: 'income', desc: 'Freelance Project', amount: 12000, cat: '💼 Work', date: new Date() },
+  { id: 5, type: 'expense', desc: 'Netflix + Spotify', amount: 850, cat: '🎮 Entertainment', date: new Date() },
+  { id: 6, type: 'expense', desc: 'Metro Pass', amount: 500, cat: '🚗 Transport', date: new Date() },
+];
+let nextId = 7;
+
+const catColors = { '💼 Work': '#2eca8b', '🛒 Food': '#f5c542', '🚗 Transport': '#4a9eff', '🏠 Housing': '#9b6dff', '🎮 Entertainment': '#f0545a', '💊 Health': '#ff8c69', '📚 Education': '#48d1cc', '💰 Investment': '#90ee90', '🛍 Shopping': '#ffb6c1', '✈ Travel': '#87ceeb' };
+
+function fmt(n) { return '₹' + Math.abs(n).toLocaleString('en-IN'); }
+
+function setType(t) {
+  txType = t;
+  document.getElementById('btnIncome').className = 'type-btn' + (t === 'income' ? ' active-income' : '');
+  document.getElementById('btnExpense').className = 'type-btn' + (t === 'expense' ? ' active-expense' : '');
+}
+
+function addTransaction() {
+  const desc = document.getElementById('desc').value.trim();
+  const amount = parseFloat(document.getElementById('amount').value);
+  const cat = document.getElementById('category').value;
+  if (!desc || !amount || amount <= 0) return;
+  transactions.unshift({ id: nextId++, type: txType, desc, amount, cat, date: new Date() });
+  document.getElementById('desc').value = '';
+  document.getElementById('amount').value = '';
+  render();
+}
+
+function deleteTransaction(id) {
+  transactions = transactions.filter(t => t.id !== id);
+  render();
+}
+
+function render() {
+  const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  const balance = income - expense;
+
+  document.getElementById('incomeVal').textContent = fmt(income);
+  document.getElementById('expenseVal').textContent = fmt(expense);
+  document.getElementById('balanceVal').textContent = fmt(balance);
+  document.getElementById('balanceVal').style.color = balance >= 0 ? 'var(--blue)' : 'var(--red)';
+  document.getElementById('txCount').textContent = `${transactions.length} entries`;
+
+  const now = new Date();
+  document.getElementById('monthBadge').textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+  // Transactions
+  const list = document.getElementById('txList');
+  if (!transactions.length) {
+    list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.8rem;font-family:'IBM Plex Mono',monospace;">No transactions yet.</div>`;
+  } else {
+    list.innerHTML = transactions.map((t, i) => `
+      <div class="tx-item" style="animation-delay:${i*0.04}s">
+        <div class="tx-icon" style="background:${catColors[t.cat] || '#4a9eff'}22;font-size:1.2rem">${t.cat.split(' ')[0]}</div>
+        <div class="tx-info">
+          <div class="tx-name">${t.desc}</div>
+          <div class="tx-cat">${t.cat.split(' ').slice(1).join(' ')}</div>
+        </div>
+        <div class="tx-amount" style="color:${t.type === 'income' ? 'var(--green)' : 'var(--red)'}">${t.type === 'income' ? '+' : '−'}${fmt(t.amount)}</div>
+        <button class="tx-del" onclick="deleteTransaction(${t.id})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  // Chart — mock 6 month data
+  renderChart(income, expense);
+}
+
+function renderChart(curIncome, curExpense) {
+  const months = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+  const mockIncome = [42000, 65000, 58000, 70000, 61000, curIncome];
+  const mockExpense = [28000, 35000, 48000, 32000, 29000, curExpense];
+  const maxVal = Math.max(...mockIncome, ...mockExpense);
+  const maxH = 72;
+
+  document.getElementById('chartBars').innerHTML = months.map((m, i) => {
+    const ih = Math.round((mockIncome[i] / maxVal) * maxH);
+    const eh = Math.round((mockExpense[i] / maxVal) * maxH);
+    return `
+      <div class="bar-group">
+        <div class="bar-stacks">
+          <div class="bar-fill income-bar" style="height:${ih}px"></div>
+          <div class="bar-fill expense-bar" style="height:${eh}px"></div>
+        </div>
+        <div class="bar-label">${m}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>

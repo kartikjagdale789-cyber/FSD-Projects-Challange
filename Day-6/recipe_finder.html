@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dishcover — Recipe Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf6f0;
+    --ink: #1e1208;
+    --terracotta: #c4522a;
+    --sage: #6b7c5e;
+    --cream: #f2ead8;
+    --warm: #e8d5b0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Decorative top stripe */
+  .stripe {
+    height: 6px;
+    background: repeating-linear-gradient(90deg, var(--terracotta) 0px, var(--terracotta) 20px, var(--sage) 20px, var(--sage) 40px, var(--warm) 40px, var(--warm) 60px);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 4rem;
+    border-bottom: 1px solid rgba(30,18,8,0.1);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--terracotta); font-style: italic; }
+  .header-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage);
+    border: 1px solid var(--sage);
+    padding: 0.3rem 0.8rem;
+    border-radius: 99px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    background: linear-gradient(180deg, var(--cream) 0%, var(--bg) 100%);
+    border-bottom: 1px solid rgba(30,18,8,0.08);
+  }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .hero h1 em { color: var(--terracotta); font-style: italic; }
+  .hero p {
+    font-size: 0.9rem;
+    color: rgba(30,18,8,0.5);
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+  }
+
+  .search-wrap {
+    display: flex;
+    max-width: 520px;
+    margin: 0 auto 1.5rem;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 99px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 var(--warm);
+  }
+  .search-wrap input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    outline: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--ink);
+  }
+  .search-wrap input::placeholder { color: rgba(30,18,8,0.3); }
+  .search-wrap button {
+    background: var(--terracotta);
+    border: none;
+    padding: 0.8rem 1.8rem;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 0 99px 99px 0;
+    transition: background 0.2s;
+  }
+  .search-wrap button:hover { background: #a8431f; }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tag {
+    padding: 0.35rem 1rem;
+    background: white;
+    border: 1px solid rgba(30,18,8,0.15);
+    border-radius: 99px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(30,18,8,0.6);
+  }
+  .tag:hover, .tag.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .main { padding: 3rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(30,18,8,0.1);
+    padding-bottom: 0.8rem;
+  }
+  .section-head h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+  .section-head span {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(30,18,8,0.4);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid rgba(30,18,8,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeUp 0.4s ease forwards;
+    opacity: 0;
+  }
+  .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(30,18,8,0.1); }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .card-img {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+  }
+  .card-badge {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    background: white;
+    border-radius: 99px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--terracotta);
+    border: 1px solid rgba(196,82,42,0.2);
+  }
+  .card-body { padding: 1.2rem; }
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    color: rgba(30,18,8,0.45);
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 0.78rem;
+    color: rgba(30,18,8,0.5);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .difficulty {
+    display: flex;
+    gap: 2px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 99px;
+    background: var(--warm);
+  }
+  .dot.filled { background: var(--terracotta); }
+  .view-btn {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--terracotta);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(196,82,42,0.3);
+    transition: border-color 0.2s;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    padding: 0;
+  }
+  .view-btn:hover { border-color: var(--terracotta); }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,18,8,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border-radius: 20px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 2.5rem;
+    position: relative;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+  .modal-close {
+    position: absolute;
+    top: 1.2rem; right: 1.2rem;
+    background: var(--warm);
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--terracotta); color: white; }
+  .modal-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .modal h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .modal-sub { font-size: 0.8rem; color: rgba(30,18,8,0.4); margin-bottom: 1.5rem; font-weight: 300; }
+  .modal-stats {
+    display: flex;
+    gap: 1.5rem;
+    background: var(--cream);
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .m-stat label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(30,18,8,0.4); display: block; margin-bottom: 0.2rem; }
+  .m-stat span { font-size: 0.95rem; font-weight: 500; }
+  .modal h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    margin-top: 1.5rem;
+  }
+  .ingredients li {
+    font-size: 0.85rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed rgba(30,18,8,0.1);
+    color: rgba(30,18,8,0.7);
+    font-weight: 300;
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .ingredients li::before { content: '·'; color: var(--terracotta); }
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    color: rgba(30,18,8,0.7);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  .step-num {
+    min-width: 24px; height: 24px;
+    background: var(--terracotta);
+    color: white;
+    border-radius: 99px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(30,18,8,0.35);
+  }
+  .no-results .nr-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .no-results p { font-size: 0.85rem; font-weight: 300; }
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<header>
+  <div class="logo">Dish<span>cover</span></div>
+  <div class="header-tag">Recipe Collection</div>
+</header>
+
+<div class="hero">
+  <h1>Find your next<br><em>favourite dish</em></h1>
+  <p>Search by ingredient, cuisine, or mood — dinner sorted.</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search pasta, chicken, dessert…">
+    <button onclick="doSearch()">Search</button>
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="filterTag('all', this)">All</div>
+    <div class="tag" onclick="filterTag('Italian', this)">🍝 Italian</div>
+    <div class="tag" onclick="filterTag('Asian', this)">🍜 Asian</div>
+    <div class="tag" onclick="filterTag('Indian', this)">🍛 Indian</div>
+    <div class="tag" onclick="filterTag('Dessert', this)">🍰 Dessert</div>
+    <div class="tag" onclick="filterTag('Healthy', this)">🥗 Healthy</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="section-head">
+    <h2>Recipes</h2>
+    <span id="countLabel">12 dishes</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const recipes = [
+  { emoji:'🍝', title:'Spaghetti Carbonara', cuisine:'Italian', time:'25 min', serves:2, difficulty:2, calories:'520 kcal', desc:'Silky Roman pasta with eggs, pecorino, guanciale and black pepper.', ingredients:['200g spaghetti','100g guanciale or pancetta','3 egg yolks','50g Pecorino Romano','Freshly cracked black pepper','Salt'], steps:['Boil pasta in salted water until al dente.','Fry guanciale in a dry pan until golden and crispy.','Whisk egg yolks with grated pecorino and pepper.','Reserve pasta water; drain pasta.','Toss pasta off heat with guanciale, egg mixture, and a splash of pasta water until creamy.','Serve immediately with extra pecorino.'] },
+  { emoji:'🍛', title:'Butter Chicken', cuisine:'Indian', time:'45 min', serves:4, difficulty:2, calories:'480 kcal', desc:'Tender chicken in a rich, velvety tomato and cream sauce spiced with garam masala.', ingredients:['500g chicken breast','1 cup yoghurt','2 tbsp garam masala','400g crushed tomatoes','200ml cream','2 tbsp butter','Garlic & ginger paste','Salt & chilli'], steps:['Marinate chicken in yoghurt and half the spices for 30 min.','Grill or pan-fry chicken until charred; set aside.','Melt butter; sauté garlic ginger paste 2 min.','Add tomatoes and remaining spices; simmer 15 min.','Blend sauce smooth; return to pan with cream.','Add chicken; simmer 10 min. Serve with naan.'] },
+  { emoji:'🍜', title:'Tonkotsu Ramen', cuisine:'Asian', time:'3 hrs', serves:2, difficulty:3, calories:'610 kcal', desc:'Deep, milky pork bone broth with springy noodles and a jammy soft-boiled egg.', ingredients:['1kg pork trotters','200g ramen noodles','Chashu pork belly (sliced)','Soft boiled eggs','Nori sheets','Spring onions','Sesame oil & soy sauce'], steps:['Blanch trotters 10 min; discard water.','Simmer trotters 3 hrs until broth is milky white.','Prepare tare: combine soy, mirin, sake and reduce.','Cook noodles per packet; drain.','Assemble: bowl, tare, broth, noodles, toppings.','Finish with sesame oil and spring onion.'] },
+  { emoji:'🥗', title:'Greek Quinoa Bowl', cuisine:'Healthy', time:'20 min', serves:2, difficulty:1, calories:'320 kcal', desc:'Protein-rich quinoa with roasted veggies, feta, olives and a lemon-herb dressing.', ingredients:['1 cup quinoa','100g cherry tomatoes','1 cucumber','80g feta cheese','Kalamata olives','Lemon juice & olive oil','Dried oregano & mint'], steps:['Cook quinoa in salted water 15 min; let cool.','Chop cucumber and halve tomatoes.','Mix lemon juice, olive oil, oregano and salt.','Combine quinoa, veggies, olives in a bowl.','Dress and toss well.','Top with crumbled feta and fresh mint.'] },
+  { emoji:'🍕', title:'Margherita Pizza', cuisine:'Italian', time:'30 min', serves:2, difficulty:2, calories:'450 kcal', desc:'Classic Neapolitan pizza with San Marzano tomato, buffalo mozzarella and fresh basil.', ingredients:['Pizza dough ball','200g San Marzano tomatoes','125g buffalo mozzarella','Fresh basil leaves','Extra virgin olive oil','Sea salt'], steps:['Stretch dough to 30cm circle on floured surface.','Spread crushed tomatoes leaving 2cm border.','Tear mozzarella and scatter evenly.','Bake at 250°C for 10–12 min until charred.','Remove; add fresh basil and drizzle olive oil.','Season with sea salt and serve immediately.'] },
+  { emoji:'🍰', title:'Tiramisu', cuisine:'Dessert', time:'20 min + chill', serves:6, difficulty:2, calories:'380 kcal', desc:'Classic Italian no-bake dessert with espresso-soaked ladyfingers and mascarpone cream.', ingredients:['300g mascarpone','4 eggs (separated)','80g caster sugar','200ml strong espresso','200g ladyfinger biscuits','Cocoa powder for dusting','2 tbsp Marsala wine'], steps:['Beat egg yolks with sugar until pale; fold in mascarpone.','Whip egg whites to stiff peaks; fold into mixture.','Dip ladyfingers in espresso+Marsala briefly.','Layer biscuits in dish; top with cream.','Repeat layers; refrigerate 4+ hours.','Dust generously with cocoa before serving.'] },
+  { emoji:'🍱', title:'Chicken Fried Rice', cuisine:'Asian', time:'20 min', serves:3, difficulty:1, calories:'420 kcal', desc:'Wok-tossed day-old rice with chicken, egg and vegetables in a savory soy glaze.', ingredients:['3 cups cooked day-old rice','200g chicken (diced)','2 eggs','Mixed vegetables (peas, carrots, corn)','3 tbsp soy sauce','1 tbsp sesame oil','Garlic & spring onions'], steps:['Heat wok over very high heat; add oil.','Stir-fry chicken until golden; push to side.','Scramble eggs in wok; mix with chicken.','Add vegetables; toss 2 min.','Add rice; break clumps and stir-fry 3 min.','Add soy sauce and sesame oil; toss and serve.'] },
+  { emoji:'🥘', title:'Chana Masala', cuisine:'Indian', time:'35 min', serves:4, difficulty:2, calories:'310 kcal', desc:'Hearty North Indian chickpea curry in a tangy spiced tomato gravy — vegan & filling.', ingredients:['2 cans chickpeas','400g tomatoes (chopped)','2 onions','Ginger-garlic paste','1 tsp cumin seeds','2 tsp chole masala','Fresh coriander'], steps:['Sauté cumin seeds in oil until they splutter.','Add onions; cook golden; add ginger-garlic paste.','Add tomatoes and cook until oil separates.','Add chole masala and chickpeas; stir.','Simmer 15 min; mash some chickpeas to thicken.','Garnish with coriander; serve with rice or puri.'] },
+  { emoji:'🧁', title:'Chocolate Lava Cake', cuisine:'Dessert', time:'20 min', serves:4, difficulty:2, calories:'440 kcal', desc:'Warm decadent chocolate cakes with a molten, flowing centre — a dinner party hero.', ingredients:['150g dark chocolate','150g butter','3 eggs + 3 yolks','120g caster sugar','50g plain flour','Cocoa for dusting','Vanilla extract'], steps:['Melt chocolate and butter together; cool slightly.','Whisk eggs, yolks and sugar until thick.','Fold chocolate into egg mixture.','Fold in flour gently.','Pour into buttered cocoa-dusted ramekins.','Bake at 200°C for exactly 12 min; turn out and serve.'] },
+  { emoji:'🫕', title:'Shakshuka', cuisine:'Healthy', time:'25 min', serves:2, difficulty:1, calories:'290 kcal', desc:'Middle Eastern eggs poached in a spiced tomato and pepper sauce — brunch perfection.', ingredients:['400g crushed tomatoes','4 eggs','2 bell peppers','1 onion','3 garlic cloves','1 tsp cumin & paprika','Feta & fresh parsley'], steps:['Sauté onion and peppers in olive oil until soft.','Add garlic and spices; cook 1 min.','Add tomatoes; season and simmer 10 min.','Make 4 wells in sauce; crack in eggs.','Cover and cook 5–7 min until whites set.','Crumble feta, scatter parsley and serve with bread.'] },
+  { emoji:'🍣', title:'Salmon Teriyaki', cuisine:'Asian', time:'20 min', serves:2, difficulty:1, calories:'380 kcal', desc:'Glazed salmon fillets with a sweet-savoury teriyaki sauce served over steamed rice.', ingredients:['2 salmon fillets','3 tbsp soy sauce','2 tbsp mirin','1 tbsp sake','1 tsp honey','Steamed rice','Sesame seeds & spring onion'], steps:['Mix soy, mirin, sake and honey to make glaze.','Season salmon with salt and pepper.','Sear salmon skin-side down 4 min in a hot pan.','Flip; add glaze and cook 2 min, basting continuously.','Remove when glazed and sticky.','Serve over rice; garnish with sesame and spring onion.'] },
+  { emoji:'🥞', title:'Fluffy Pancakes', cuisine:'Dessert', time:'15 min', serves:4, difficulty:1, calories:'340 kcal', desc:'Ultra-thick, cloud-like pancakes served with maple syrup and fresh berries.', ingredients:['200g plain flour','2 tsp baking powder','2 tbsp sugar','1 egg','240ml milk','30g melted butter','Pinch of salt'], steps:['Mix dry ingredients in a bowl.','Whisk egg, milk and butter; pour into dry mix.','Stir gently — lumps are fine, do not over-mix.','Heat non-stick pan on medium; add batter by ladle.','Cook until bubbles form on surface; flip.','Cook 1 min more; serve with syrup and berries.'] },
+];
+
+let activeTag = 'all';
+let activeSearch = '';
+
+function renderGrid(items) {
+  const grid = document.getElementById('grid');
+  document.getElementById('countLabel').textContent = `${items.length} dish${items.length !== 1 ? 'es' : ''}`;
+  if (!items.length) {
+    grid.innerHTML = `<div class="no-results" style="grid-column:1/-1"><div class="nr-icon">🍽</div><p>No recipes found.<br>Try a different search or filter.</p></div>`;
+    return;
+  }
+  grid.innerHTML = items.map((r, i) => `
+    <div class="card" style="animation-delay:${i * 0.07}s" onclick="openModal(${recipes.indexOf(r)})">
+      <div class="card-img" style="background:${bgColor(r.cuisine)}">${r.emoji}
+        <div class="card-badge">${r.cuisine}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="meta-item">⏱ ${r.time}</span>
+          <span class="meta-item">👤 ${r.serves}</span>
+          <span class="meta-item">🔥 ${r.calories}</span>
+        </div>
+        <div class="card-title">${r.title}</div>
+        <div class="card-desc">${r.desc}</div>
+        <div class="card-footer">
+          <div class="difficulty">${[1,2,3].map(n => `<div class="dot ${n <= r.difficulty ? 'filled' : ''}"></div>`).join('')}</div>
+          <button class="view-btn">View Recipe →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function bgColor(c) {
+  const map = { Italian:'linear-gradient(135deg,#fde8d0,#f5c8a0)', Indian:'linear-gradient(135deg,#ffe0c0,#f9b870)', Asian:'linear-gradient(135deg,#ddeeff,#b0d4f5)', Healthy:'linear-gradient(135deg,#dff0d8,#b5d9a4)', Dessert:'linear-gradient(135deg,#f5e6ff,#e0c0f0)' };
+  return map[c] || '#f0ebe3';
+}
+
+function filtered() {
+  return recipes.filter(r => {
+    const matchTag = activeTag === 'all' || r.cuisine === activeTag;
+    const matchSearch = !activeSearch || r.title.toLowerCase().includes(activeSearch) || r.desc.toLowerCase().includes(activeSearch) || r.cuisine.toLowerCase().includes(activeSearch);
+    return matchTag && matchSearch;
+  });
+}
+
+function filterTag(tag, el) {
+  activeTag = tag;
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderGrid(filtered());
+}
+
+function doSearch() {
+  activeSearch = document.getElementById('searchInput').value.toLowerCase().trim();
+  renderGrid(filtered());
+}
+
+document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key === 'Enter') doSearch(); });
+document.getElementById('searchInput').addEventListener('input', e => {
+  if (!e.target.value) { activeSearch = ''; renderGrid(filtered()); }
+});
+
+function openModal(idx) {
+  const r = recipes[idx];
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-emoji">${r.emoji}</div>
+    <h2>${r.title}</h2>
+    <div class="modal-sub">${r.cuisine} · ${r.desc}</div>
+    <div class="modal-stats">
+      <div class="m-stat"><label>Time</label><span>${r.time}</span></div>
+      <div class="m-stat"><label>Serves</label><span>${r.serves}</span></div>
+      <div class="m-stat"><label>Calories</label><span>${r.calories}</span></div>
+    </div>
+    <h3>Ingredients</h3>
+    <ul class="ingredients">${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    <h3>Method</h3>
+    <div class="steps">${r.steps.map((s, i) => `<div class="step"><div class="step-num">${i+1}</div><div>${s}</div></div>`).join('')}</div>
+  `;
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function closeModal(e) { if (e.target === document.getElementById('modalBg')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modalBg').classList.remove('open'); }
+
+renderGrid(recipes);
+</script>
+</body>
+</html>

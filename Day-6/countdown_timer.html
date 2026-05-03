@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f0e8;
+    --ink: #1a1510;
+    --accent: #e63c1e;
+    --mid: #8a7a6a;
+    --light: #e8e0d0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Barlow', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3rem 1.5rem;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(230,60,30,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(26,21,16,0.04) 0%, transparent 50%);
+  }
+
+  /* Header */
+  .site-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .site-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 0.4rem;
+  }
+  .site-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .site-title span { color: var(--accent); }
+
+  /* Event input area */
+  .event-form {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .field label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .field input {
+    width: 100%;
+    border: 1.5px solid rgba(26,21,16,0.2);
+    border-radius: 0;
+    padding: 0.75rem 0.9rem;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+
+  .add-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--ink);
+    border: none;
+    color: var(--bg);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .add-btn:hover { background: var(--accent); }
+
+  /* Countdown cards */
+  .cards-wrap {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .cd-card {
+    background: white;
+    border: 2px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+    opacity: 0;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  @keyframes slideIn { to { opacity: 1; } }
+
+  .card-accent-bar {
+    height: 4px;
+    background: var(--accent);
+  }
+  .card-body { padding: 1.5rem 2rem; }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+  .event-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .event-date {
+    font-size: 0.72rem;
+    color: var(--mid);
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+  }
+  .card-del {
+    background: none;
+    border: 1.5px solid rgba(26,21,16,0.15);
+    color: var(--mid);
+    width: 30px; height: 30px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    border-radius: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-del:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* Number blocks */
+  .time-blocks {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+  }
+  .time-unit { text-align: center; }
+  .time-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1.5px solid rgba(26,21,16,0.12);
+    padding: 0.5rem 0.3rem 0.3rem;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.2s;
+  }
+  .time-num.urgent { color: var(--accent); }
+  .time-num::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(26,21,16,0.08);
+  }
+  .time-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-top: 0.4rem;
+    font-weight: 600;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--light);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 0;
+    transition: width 1s linear;
+  }
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  /* Expired card */
+  .cd-card.expired .card-accent-bar { background: var(--mid); }
+  .cd-card.expired .time-num { color: var(--mid); }
+  .cd-card.expired .progress-fill { background: var(--mid); width: 100% !important; }
+  .cd-card.expired .progress-pct { color: var(--mid); }
+  .expired-badge {
+    display: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    border: 1.5px solid rgba(138,122,106,0.3);
+    padding: 0.2rem 0.7rem;
+    margin-top: 0.8rem;
+    display: inline-block;
+  }
+  .cd-card.expired .expired-badge { display: inline-block; }
+  .cd-card:not(.expired) .expired-badge { display: none; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 2px dashed rgba(26,21,16,0.15);
+    color: var(--mid);
+    display: none;
+  }
+  .empty.show { display: block; }
+  .empty-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    color: rgba(26,21,16,0.12);
+  }
+  .empty p { font-size: 0.8rem; font-style: italic; color: var(--mid); }
+</style>
+</head>
+<body>
+<div class="site-header">
+  <div class="site-label">Event</div>
+  <div class="site-title">Count<span>down</span></div>
+</div>
+
+<div class="event-form">
+  <div class="form-row">
+    <div class="field">
+      <label>Event Name</label>
+      <input type="text" id="eventName" placeholder="New Year, Birthday…" maxlength="32">
+    </div>
+    <div class="field">
+      <label>Target Date & Time</label>
+      <input type="datetime-local" id="eventDate">
+    </div>
+  </div>
+  <button class="add-btn" onclick="addEvent()">＋ Add Countdown</button>
+</div>
+
+<div class="cards-wrap" id="cardsWrap"></div>
+<div class="empty" id="emptyState">
+  <div class="empty-icon">00:00</div>
+  <p>No countdowns yet.<br>Add your first event above.</p>
+</div>
+
+<script>
+let events = [];
+let intervals = {};
+
+// Default events
+const now = new Date();
+function addDays(d, days) { const r = new Date(d); r.setDate(r.getDate() + days); return r; }
+
+events = [
+  { id: 1, name: "New Year 2027", date: new Date("2027-01-01T00:00:00"), created: new Date("2026-01-01T00:00:00") },
+  { id: 2, name: "Summer Vacation", date: addDays(now, 47), created: now },
+  { id: 3, name: "Project Deadline", date: addDays(now, 8), created: addDays(now, -20) },
+];
+let nextId = 4;
+
+// Set default datetime-local value to tomorrow
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+tomorrow.setHours(0, 0, 0, 0);
+document.getElementById('eventDate').value = tomorrow.toISOString().slice(0, 16);
+
+function addEvent() {
+  const name = document.getElementById('eventName').value.trim();
+  const dateVal = document.getElementById('eventDate').value;
+  if (!name || !dateVal) return;
+  const date = new Date(dateVal);
+  if (isNaN(date.getTime())) return;
+  events.unshift({ id: nextId++, name, date, created: new Date() });
+  document.getElementById('eventName').value = '';
+  renderAll();
+}
+
+function removeEvent(id) {
+  clearInterval(intervals[id]);
+  delete intervals[id];
+  events = events.filter(e => e.id !== id);
+  renderAll();
+}
+
+function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+function getTimeLeft(date) {
+  const diff = date - new Date();
+  if (diff <= 0) return null;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  return { d, h, m, s, total: diff };
+}
+
+function getProgress(created, target) {
+  const total = target - created;
+  const elapsed = new Date() - created;
+  return Math.min(100, Math.max(0, (elapsed / total) * 100));
+}
+
+function renderAll() {
+  Object.values(intervals).forEach(clearInterval);
+  intervals = {};
+  const wrap = document.getElementById('cardsWrap');
+  const empty = document.getElementById('emptyState');
+  if (!events.length) { wrap.innerHTML = ''; empty.classList.add('show'); return; }
+  empty.classList.remove('show');
+  wrap.innerHTML = events.map((e, i) => `
+    <div class="cd-card" id="card-${e.id}" style="animation-delay:${i*0.08}s">
+      <div class="card-accent-bar"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div>
+            <div class="event-name">${e.name}</div>
+            <div class="event-date">${e.date.toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
+          </div>
+          <button class="card-del" onclick="removeEvent(${e.id})">✕</button>
+        </div>
+        <div class="time-blocks">
+          <div class="time-unit"><span class="time-num" id="d-${e.id}">00</span><div class="time-label">Days</div></div>
+          <div class="time-unit"><span class="time-num" id="h-${e.id}">00</span><div class="time-label">Hours</div></div>
+          <div class="time-unit"><span class="time-num" id="m-${e.id}">00</span><div class="time-label">Minutes</div></div>
+          <div class="time-unit"><span class="time-num" id="s-${e.id}">00</span><div class="time-label">Seconds</div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" id="p-${e.id}" style="width:0%"></div></div>
+          <div class="progress-pct" id="pct-${e.id}">0%</div>
+        </div>
+        <div class="expired-badge">Event Passed</div>
+      </div>
+    </div>
+  `).join('');
+
+  events.forEach(e => {
+    function tick() {
+      const tl = getTimeLeft(e.date);
+      const card = document.getElementById(`card-${e.id}`);
+      if (!card) return;
+      if (!tl) {
+        card.classList.add('expired');
+        ['d','h','m','s'].forEach(u => {
+          const el = document.getElementById(`${u}-${e.id}`);
+          if (el) { el.textContent = '00'; el.classList.remove('urgent'); }
+        });
+        document.getElementById(`p-${e.id}`).style.width = '100%';
+        document.getElementById(`pct-${e.id}`).textContent = '100%';
+        clearInterval(intervals[e.id]);
+        return;
+      }
+      document.getElementById(`d-${e.id}`).textContent = pad(tl.d);
+      document.getElementById(`h-${e.id}`).textContent = pad(tl.h);
+      document.getElementById(`m-${e.id}`).textContent = pad(tl.m);
+      const sEl = document.getElementById(`s-${e.id}`);
+      sEl.textContent = pad(tl.s);
+
+      // Urgent when less than 1 day
+      const isUrgent = tl.d === 0;
+      ['d','h','m','s'].forEach(u => {
+        const el = document.getElementById(`${u}-${e.id}`);
+        if (el) el.classList.toggle('urgent', isUrgent);
+      });
+
+      const pct = Math.round(getProgress(e.created, e.date));
+      document.getElementById(`p-${e.id}`).style.width = pct + '%';
+      document.getElementById(`pct-${e.id}`).textContent = pct + '%';
+    }
+    tick();
+    intervals[e.id] = setInterval(tick, 1000);
+  });
+}
+
+renderAll();
+</script>
+</body>
+</html>
