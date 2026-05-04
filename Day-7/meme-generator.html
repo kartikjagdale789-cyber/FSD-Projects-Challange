@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MEMIFY — Meme Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #18181f;
+  --surface2: #22222c;
+  --border: #2e2e3d;
+  --yellow: #ffe033;
+  --yellow-dim: rgba(255,224,51,0.1);
+  --pink: #ff3d80;
+  --cyan: #00e5ff;
+  --text: #e8e8f0;
+  --muted: #6b6b80;
+  --white: #ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+body > * { position:relative;z-index:1; }
+
+/* ── NAV ── */
+nav {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;
+  border-bottom:1px solid var(--border);
+  background:rgba(15,15,19,0.95);
+  backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:50;
+}
+.logo {
+  font-family:'Bangers',cursive;
+  font-size:2rem;letter-spacing:.08em;
+  background:linear-gradient(90deg,var(--yellow),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-badge {
+  font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--border);
+  padding:5px 14px;border-radius:999px;
+}
+
+/* ── HERO BANNER ── */
+.hero {
+  text-align:center;
+  padding:60px 20px 40px;
+  position:relative;
+}
+.hero-title {
+  font-family:'Bangers',cursive;
+  font-size:clamp(3.5rem,10vw,7rem);
+  letter-spacing:.06em;
+  line-height:1;
+  color:var(--white);
+}
+.hero-title span.y { color:var(--yellow); }
+.hero-title span.p { color:var(--pink); }
+.hero-sub {
+  font-size:15px;font-weight:600;color:var(--muted);
+  margin-top:12px;letter-spacing:.02em;
+}
+.floating-emoji {
+  position:absolute;font-size:2rem;animation:float 4s ease-in-out infinite;
+  pointer-events:none;user-select:none;
+}
+.fe1{top:20px;left:8%;animation-delay:0s}
+.fe2{top:40px;right:10%;animation-delay:.8s}
+.fe3{bottom:10px;left:15%;animation-delay:1.4s;font-size:1.5rem}
+.fe4{bottom:20px;right:8%;animation-delay:.4s;font-size:1.5rem}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:28px;
+  max-width:1100px;
+  margin:0 auto;
+  padding:0 28px 60px;
+}
+
+/* ── CANVAS SIDE ── */
+.canvas-section {}
+.canvas-wrap {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px;
+  position:sticky;top:80px;
+}
+.canvas-label {
+  font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+}
+#meme-canvas {
+  width:100%;
+  border-radius:8px;
+  display:block;
+  background:#000;
+  cursor:crosshair;
+}
+.canvas-actions {
+  display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;
+}
+.btn {
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 20px;border-radius:8px;border:none;cursor:pointer;
+  transition:transform .1s,opacity .2s,box-shadow .2s;
+  flex:1;min-width:100px;
+}
+.btn:active{transform:scale(.96)}
+.btn-yellow {
+  background:var(--yellow);color:#0f0f13;
+}
+.btn-yellow:hover{box-shadow:0 0 20px rgba(255,224,51,.4)}
+.btn-pink {
+  background:var(--pink);color:#fff;
+}
+.btn-pink:hover{box-shadow:0 0 20px rgba(255,61,128,.4)}
+.btn-outline {
+  background:transparent;color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ── CONTROLS SIDE ── */
+.controls-section {}
+
+/* Template Picker */
+.panel {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:22px;margin-bottom:20px;
+  animation:fadeUp .5s ease both;
+}
+.panel-title {
+  font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--yellow);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.panel-title::before{content:'';width:3px;height:14px;background:var(--yellow);border-radius:2px;display:inline-block}
+
+/* Template grid */
+.template-grid {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+}
+.tmpl-btn {
+  aspect-ratio:1;border-radius:8px;border:2px solid transparent;
+  overflow:hidden;cursor:pointer;background:var(--surface2);
+  transition:border-color .15s,transform .15s;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  position:relative;
+}
+.tmpl-btn:hover{border-color:var(--yellow);transform:scale(1.06)}
+.tmpl-btn.active{border-color:var(--pink);box-shadow:0 0 12px rgba(255,61,128,.35)}
+.tmpl-btn img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px}
+
+/* Upload */
+.upload-area {
+  border:2px dashed var(--border);border-radius:10px;
+  padding:22px;text-align:center;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.upload-area:hover{border-color:var(--cyan);background:rgba(0,229,255,.04)}
+.upload-area .upload-icon{font-size:2rem;margin-bottom:8px}
+.upload-area p{font-size:12px;font-weight:600;color:var(--muted)}
+.upload-area span{color:var(--cyan)}
+#file-input{display:none}
+
+/* Text controls */
+.form-group{margin-bottom:14px}
+.form-group label{
+  display:block;font-size:10px;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.form-group input[type="text"],
+.form-group input[type="range"],
+.form-group select {
+  width:100%;padding:10px 14px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;
+  outline:none;transition:border-color .2s;
+}
+.form-group input:focus,
+.form-group select:focus{border-color:var(--yellow)}
+.form-group input[type="range"]{
+  padding:6px 0;cursor:pointer;accent-color:var(--yellow);
+}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-val{
+  font-size:12px;font-weight:700;color:var(--yellow);
+  min-width:30px;text-align:right;
+}
+
+/* Color swatches */
+.color-row{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{
+  width:28px;height:28px;border-radius:50%;cursor:pointer;
+  border:3px solid transparent;transition:transform .15s,border-color .15s;
+}
+.swatch:hover{transform:scale(1.15)}
+.swatch.active{border-color:var(--white)}
+
+/* Tabs for top/bottom text */
+.tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.tab-btn{
+  flex:1;padding:8px;font-family:'Nunito',sans-serif;font-size:11px;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:none;color:var(--muted);cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.tab-btn.active{background:var(--yellow);color:#0f0f13}
+
+/* Sticker picker */
+.sticker-grid{display:flex;flex-wrap:wrap;gap:8px}
+.sticker-btn{
+  font-size:1.5rem;padding:6px 8px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:8px;cursor:pointer;
+  transition:transform .15s,border-color .15s;
+}
+.sticker-btn:hover{transform:scale(1.2);border-color:var(--pink)}
+
+/* Meme gallery */
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  max-height:220px;overflow-y:auto;
+}
+.gallery-grid::-webkit-scrollbar{width:4px}
+.gallery-grid::-webkit-scrollbar-track{background:var(--surface2)}
+.gallery-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.gallery-item{
+  aspect-ratio:1;border-radius:6px;overflow:hidden;
+  border:2px solid var(--border);cursor:pointer;
+  transition:border-color .15s,transform .15s;
+}
+.gallery-item:hover{border-color:var(--pink);transform:scale(1.04)}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+.gallery-empty{
+  grid-column:1/-1;text-align:center;padding:28px;
+  color:var(--muted);font-size:12px;font-weight:600;
+}
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--yellow);color:#0f0f13;
+  padding:10px 24px;border-radius:999px;
+  font-size:13px;font-weight:700;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;
+  z-index:200;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .main{grid-template-columns:1fr;padding:0 16px 60px}
+  .canvas-wrap{position:static}
+  nav{padding:14px 20px}
+}
+@media(max-width:480px){
+  .template-grid{grid-template-columns:repeat(3,1fr)}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">MEMIFY</div>
+  <div class="nav-badge">🔥 Meme Generator</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="floating-emoji fe1">😂</span>
+  <span class="floating-emoji fe2">🔥</span>
+  <span class="floating-emoji fe3">💀</span>
+  <span class="floating-emoji fe4">🤣</span>
+  <h1 class="hero-title">Make <span class="y">Dank</span><br><span class="p">Memes</span> Fast</h1>
+  <p class="hero-sub">Pick a template · Add text · Download · Go viral 🚀</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CANVAS -->
+  <div class="canvas-section">
+    <div class="canvas-wrap">
+      <div class="canvas-label">// Preview</div>
+      <canvas id="meme-canvas" width="560" height="560"></canvas>
+      <div class="canvas-actions">
+        <button class="btn btn-yellow" onclick="downloadMeme()">⬇ Download</button>
+        <button class="btn btn-pink" onclick="saveToPad()">💾 Save to Pad</button>
+        <button class="btn btn-outline" onclick="clearAll()">🗑 Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-section">
+
+    <!-- Templates -->
+    <div class="panel" style="animation-delay:.05s">
+      <div class="panel-title">Templates</div>
+      <div class="template-grid" id="template-grid"></div>
+    </div>
+
+    <!-- Upload -->
+    <div class="panel" style="animation-delay:.1s">
+      <div class="panel-title">Upload Image</div>
+      <div class="upload-area" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📁</div>
+        <p>Click to upload or <span>drag & drop</span></p>
+      </div>
+      <input type="file" id="file-input" accept="image/*"/>
+    </div>
+
+    <!-- Text -->
+    <div class="panel" style="animation-delay:.15s">
+      <div class="panel-title">Meme Text</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('top',this)">Top Text</button>
+        <button class="tab-btn" onclick="switchTab('bottom',this)">Bottom Text</button>
+      </div>
+      <div id="tab-top">
+        <div class="form-group">
+          <label>Top Text</label>
+          <input type="text" id="top-text" placeholder="WHEN YOU..." oninput="drawMeme()"/>
+        </div>
+      </div>
+      <div id="tab-bottom" style="display:none">
+        <div class="form-group">
+          <label>Bottom Text</label>
+          <input type="text" id="bottom-text" placeholder="AND THEN..." oninput="drawMeme()"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Font Size</label>
+        <div class="range-row">
+          <input type="range" id="font-size" min="20" max="80" value="44" oninput="updateRange(this,'font-val');drawMeme()"/>
+          <span class="range-val" id="font-val">44</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Text Color</label>
+        <div class="color-row" id="color-swatches"></div>
+      </div>
+      <div class="form-group">
+        <label>Font Style</label>
+        <select id="font-style" onchange="drawMeme()">
+          <option value="Impact">Impact (Classic)</option>
+          <option value="Bangers">Bangers (Bold)</option>
+          <option value="Arial Black">Arial Black</option>
+          <option value="Comic Sans MS">Comic Sans 😂</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stickers -->
+    <div class="panel" style="animation-delay:.2s">
+      <div class="panel-title">Stickers</div>
+      <div class="sticker-grid" id="sticker-grid"></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;font-weight:600">Click a sticker to stamp it on the meme</p>
+    </div>
+
+    <!-- Saved Pad -->
+    <div class="panel" style="animation-delay:.25s">
+      <div class="panel-title">Saved Memes</div>
+      <div class="gallery-grid" id="gallery-grid">
+        <div class="gallery-empty">No memes saved yet 😢<br>Hit "Save to Pad" above!</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ─────────────────────────────────
+const TEMPLATES = [
+  { emoji:'😤', color:'#1a1a2e', label:'Distracted BF' },
+  { emoji:'🧠', color:'#0d1b2a', label:'Big Brain' },
+  { emoji:'😭', color:'#1a0a00', label:'This Is Fine' },
+  { emoji:'👁', color:'#0a1a0a', label:'Side Eye' },
+  { emoji:'💀', color:'#111', label:'Dead Inside' },
+  { emoji:'🐸', color:'#0a2a0a', label:'Kermit' },
+  { emoji:'🤔', color:'#1a1a00', label:'Thinking' },
+  { emoji:'😈', color:'#1a001a', label:'Evil Plan' },
+];
+
+const STICKERS = ['😂','🔥','💯','👀','🤡','💀','🫡','🥲','✨','👇','🚀','😤','🫠','👁️','⚡','🎯'];
+const COLORS = ['#ffffff','#ffe033','#ff3d80','#00e5ff','#ff6b35','#00ff88','#ff0000','#000000'];
+
+const canvas = document.getElementById('meme-canvas');
+const ctx = canvas.getContext('2d');
+let currentImg = null;
+let activeColor = '#ffffff';
+let savedMemes = JSON.parse(localStorage.getItem('memify_saved') || '[]');
+let stickerPositions = [];
+
+// ── INIT ───────────────────────────────────
+function init() {
+  // Templates
+  const tg = document.getElementById('template-grid');
+  TEMPLATES.forEach((t, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'tmpl-btn' + (i===0?' active':'');
+    btn.title = t.label;
+    btn.innerHTML = `<span style="font-size:1.8rem">${t.emoji}</span>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.tmpl-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      loadTemplate(t);
+    };
+    tg.appendChild(btn);
+  });
+  loadTemplate(TEMPLATES[0]);
+
+  // Colors
+  const cs = document.getElementById('color-swatches');
+  COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c==='#ffffff'?' active':'');
+    s.style.background = c;
+    s.style.border = c==='#000000'?'3px solid #444':'';
+    s.onclick = () => {
+      document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('active'));
+      s.classList.add('active');
+      activeColor = c;
+      drawMeme();
+    };
+    cs.appendChild(s);
+  });
+
+  // Stickers
+  const sg = document.getElementById('sticker-grid');
+  STICKERS.forEach(em => {
+    const btn = document.createElement('button');
+    btn.className = 'sticker-btn';
+    btn.textContent = em;
+    btn.onclick = () => addSticker(em);
+    sg.appendChild(btn);
+  });
+
+  // File upload
+  document.getElementById('file-input').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => { currentImg = img; stickerPositions = []; drawMeme(); };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Drag & drop
+  document.querySelector('.upload-area').addEventListener('dragover', e => e.preventDefault());
+  document.querySelector('.upload-area').addEventListener('drop', e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => { currentImg = img; stickerPositions = []; drawMeme(); };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  renderGallery();
+  drawMeme();
+}
+
+// ── LOAD TEMPLATE ──────────────────────────
+function loadTemplate(t) {
+  const offscreen = document.createElement('canvas');
+  offscreen.width = 560; offscreen.height = 560;
+  const oc = offscreen.getContext('2d');
+  oc.fillStyle = t.color;
+  oc.fillRect(0,0,560,560);
+
+  // Draw big emoji
+  oc.font = '220px serif';
+  oc.textAlign = 'center';
+  oc.textBaseline = 'middle';
+  oc.globalAlpha = 0.18;
+  oc.fillText(t.emoji, 280, 280);
+  oc.globalAlpha = 1;
+
+  // Draw emoji again cleaner
+  oc.font = '160px serif';
+  oc.fillText(t.emoji, 280, 280);
+
+  const img = new Image();
+  img.onload = () => { currentImg = img; stickerPositions = []; drawMeme(); };
+  img.src = offscreen.toDataURL();
+}
+
+// ── DRAW MEME ──────────────────────────────
+function drawMeme() {
+  ctx.clearRect(0,0,560,560);
+
+  // BG
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0,0,560,560);
+
+  // Image
+  if (currentImg) {
+    const iw = currentImg.width, ih = currentImg.height;
+    const scale = Math.max(560/iw, 560/ih);
+    const dw = iw*scale, dh = ih*scale;
+    ctx.drawImage(currentImg, (560-dw)/2, (560-dh)/2, dw, dh);
+  }
+
+  const fs = parseInt(document.getElementById('font-size').value);
+  const fontFam = document.getElementById('font-style').value;
+  const topText = document.getElementById('top-text').value.toUpperCase();
+  const botText = document.getElementById('bottom-text').value.toUpperCase();
+
+  ctx.textAlign = 'center';
+  ctx.lineJoin = 'round';
+
+  function drawText(text, y) {
+    if (!text) return;
+    ctx.font = `${fs}px ${fontFam}`;
+    ctx.lineWidth = fs * 0.14;
+    ctx.strokeStyle = '#000';
+    ctx.strokeText(text, 280, y);
+    ctx.fillStyle = activeColor;
+    ctx.fillText(text, 280, y);
+  }
+
+  ctx.textBaseline = 'top';
+  drawText(topText, 16);
+  ctx.textBaseline = 'bottom';
+  drawText(botText, 544);
+
+  // Stickers
+  stickerPositions.forEach(s => {
+    ctx.font = `${s.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.emoji, s.x, s.y);
+  });
+}
+
+// ── STICKER ────────────────────────────────
+function addSticker(emoji) {
+  stickerPositions.push({
+    emoji,
+    x: 100 + Math.random() * 360,
+    y: 100 + Math.random() * 360,
+    size: 48 + Math.random() * 32,
+  });
+  drawMeme();
+  toast('Sticker added! 🎉');
+}
+
+// ── TAB ────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-top').style.display = tab==='top'?'block':'none';
+  document.getElementById('tab-bottom').style.display = tab==='bottom'?'block':'none';
+}
+
+// ── DOWNLOAD ───────────────────────────────
+function downloadMeme() {
+  const link = document.createElement('a');
+  link.download = `memify-${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  toast('Meme downloaded! 🔥');
+}
+
+// ── SAVE TO PAD ────────────────────────────
+function saveToPad() {
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+  savedMemes.unshift({ id: Date.now(), src: dataUrl });
+  if (savedMemes.length > 12) savedMemes = savedMemes.slice(0,12);
+  localStorage.setItem('memify_saved', JSON.stringify(savedMemes));
+  renderGallery();
+  toast('Saved to Meme Pad! 💾');
+}
+
+// ── GALLERY ────────────────────────────────
+function renderGallery() {
+  const g = document.getElementById('gallery-grid');
+  if (!savedMemes.length) {
+    g.innerHTML = '<div class="gallery-empty">No memes saved yet 😢<br>Hit "Save to Pad" above!</div>';
+    return;
+  }
+  g.innerHTML = savedMemes.map(m => `
+    <div class="gallery-item" onclick="loadSaved('${m.id}')">
+      <img src="${m.src}" alt="saved meme"/>
+    </div>
+  `).join('');
+}
+
+function loadSaved(id) {
+  const m = savedMemes.find(x=>x.id==id);
+  if (!m) return;
+  const img = new Image();
+  img.onload = () => { currentImg = img; stickerPositions = []; drawMeme(); };
+  img.src = m.src;
+  toast('Loaded from Pad!');
+}
+
+// ── CLEAR ──────────────────────────────────
+function clearAll() {
+  document.getElementById('top-text').value = '';
+  document.getElementById('bottom-text').value = '';
+  stickerPositions = [];
+  loadTemplate(TEMPLATES[0]);
+  document.querySelectorAll('.tmpl-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  toast('Reset! 🗑');
+}
+
+// ── HELPERS ────────────────────────────────
+function updateRange(el, valId) {
+  document.getElementById(valId).textContent = el.value;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quotidian — Daily Wisdom</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --paper: #f5f0e8;
+    --accent: #c8522a;
+    --muted: #8a7e6e;
+    --border: #d4c9b0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-size: 1.1rem; font-weight: 300; letter-spacing: .2em; text-transform: uppercase; }
+  .logo span { color: var(--accent); }
+  .date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: .05em; }
+
+  .categories {
+    display: flex; gap: 0; padding: 0 3rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .cat {
+    font-size: 0.75rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: 1rem 1.5rem; border: none; background: none;
+    color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s; font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .cat:hover { color: var(--ink); }
+  .cat.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main {
+    display: grid; grid-template-columns: 1fr 340px;
+    min-height: calc(100vh - 120px);
+  }
+
+  .quote-stage {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 5rem 4rem; position: relative; overflow: hidden;
+  }
+  .big-number {
+    position: absolute; top: 2rem; left: 3rem;
+    font-size: 18rem; font-weight: 600; color: var(--border);
+    line-height: 1; pointer-events: none; user-select: none;
+    font-style: italic; opacity: .5;
+  }
+  .quote-content { position: relative; z-index: 1; }
+  .quote-text {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 300; line-height: 1.55;
+    font-style: italic; color: var(--ink);
+    margin-bottom: 2rem;
+    transition: opacity .4s, transform .4s;
+  }
+  .quote-text.fade { opacity: 0; transform: translateY(12px); }
+  .quote-author {
+    font-size: 0.9rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--accent); font-style: normal; font-weight: 400;
+    font-family: 'DM Mono', monospace;
+  }
+  .quote-author::before { content: '— '; }
+
+  .actions {
+    display: flex; gap: 1rem; margin-top: 3rem; align-items: center;
+  }
+  .btn-roll {
+    font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: .9rem 2.2rem;
+    background: var(--ink); color: var(--paper);
+    border: none; cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-roll:hover { background: var(--accent); }
+  .btn-copy {
+    font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: .9rem 1.8rem;
+    background: none; color: var(--ink);
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-copy:hover { border-color: var(--ink); }
+  .btn-copy.copied { color: var(--accent); border-color: var(--accent); }
+
+  .sidebar {
+    border-left: 1px solid var(--border);
+    padding: 3rem 2rem;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .sidebar-title {
+    font-family: 'DM Mono', monospace; font-size: 0.68rem;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1.5rem;
+  }
+  .hist-item {
+    padding: 1.2rem 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: all .15s;
+  }
+  .hist-item:hover .hist-text { color: var(--accent); }
+  .hist-text {
+    font-size: 0.92rem; font-style: italic; line-height: 1.5;
+    color: var(--ink); margin-bottom: .4rem;
+    transition: color .2s;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .hist-author {
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    color: var(--muted); letter-spacing: .05em;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: .3rem .8rem; border: 1px solid var(--border);
+    color: var(--muted); margin-top: 1.5rem;
+  }
+
+  footer {
+    text-align: center; padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    color: var(--muted); letter-spacing: .08em;
+  }
+
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    header { padding: 1.5rem; }
+    .categories { padding: 0 1.5rem; }
+    .quote-stage { padding: 3rem 1.5rem; }
+    .big-number { font-size: 8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Quoti<span>d</span>ian</div>
+  <div class="date" id="today"></div>
+</header>
+
+<div class="categories">
+  <button class="cat active" onclick="setCat('All',this)">All</button>
+  <button class="cat" onclick="setCat('Wisdom',this)">Wisdom</button>
+  <button class="cat" onclick="setCat('Motivation',this)">Motivation</button>
+  <button class="cat" onclick="setCat('Life',this)">Life</button>
+  <button class="cat" onclick="setCat('Happiness',this)">Happiness</button>
+  <button class="cat" onclick="setCat('Courage',this)">Courage</button>
+</div>
+
+<main>
+  <div class="quote-stage">
+    <div class="big-number">"</div>
+    <div class="quote-content">
+      <div class="quote-text" id="qtext"></div>
+      <div class="quote-author" id="qauthor"></div>
+      <div class="tag" id="qtag"></div>
+      <div class="actions">
+        <button class="btn-roll" onclick="nextQuote()">New Quote</button>
+        <button class="btn-copy" id="copybtn" onclick="copyQ()">Copy</button>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-title">Recent</div>
+    <div id="history"></div>
+  </div>
+</main>
+
+<footer>A new perspective, one quote at a time.</footer>
+
+<script>
+const quotes = [
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs", cat: "Motivation" },
+  { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein", cat: "Wisdom" },
+  { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius", cat: "Motivation" },
+  { text: "Life is what happens when you're busy making other plans.", author: "John Lennon", cat: "Life" },
+  { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt", cat: "Motivation" },
+  { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama", cat: "Happiness" },
+  { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle", cat: "Wisdom" },
+  { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela", cat: "Courage" },
+  { text: "Spread love everywhere you go. Let no one ever come to you without leaving happier.", author: "Mother Teresa", cat: "Happiness" },
+  { text: "When you reach the end of your rope, tie a knot in it and hang on.", author: "Franklin D. Roosevelt", cat: "Courage" },
+  { text: "Always remember that you are absolutely unique. Just like everyone else.", author: "Margaret Mead", cat: "Life" },
+  { text: "Do not go where the path may lead, go instead where there is no path and leave a trail.", author: "Ralph Waldo Emerson", cat: "Courage" },
+  { text: "You will face many defeats in life, but never let yourself be defeated.", author: "Maya Angelou", cat: "Wisdom" },
+  { text: "The purpose of our lives is to be happy.", author: "Dalai Lama", cat: "Happiness" },
+  { text: "Get busy living or get busy dying.", author: "Stephen King", cat: "Life" },
+  { text: "You only live once, but if you do it right, once is enough.", author: "Mae West", cat: "Life" },
+  { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill", cat: "Courage" },
+  { text: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle", cat: "Wisdom" },
+];
+
+let cat = 'All', pool = [...quotes], idx = 0, hist = [];
+
+document.getElementById('today').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
+
+function setCat(c, btn) {
+  cat = c; pool = c==='All'?[...quotes]:quotes.filter(q=>q.cat===c);
+  shuffle(pool); idx=0;
+  document.querySelectorAll('.cat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  showQuote();
+}
+
+function showQuote() {
+  if(!pool.length) return;
+  const q = pool[idx % pool.length];
+  const el = document.getElementById('qtext');
+  el.classList.add('fade');
+  setTimeout(() => {
+    document.getElementById('qtext').textContent = '\u201C' + q.text + '\u201D';
+    document.getElementById('qauthor').textContent = q.author;
+    document.getElementById('qtag').textContent = q.cat;
+    el.classList.remove('fade');
+  }, 350);
+  hist.unshift(q); if(hist.length > 5) hist.pop();
+  renderHist();
+}
+
+function nextQuote() { idx = (idx+1) % pool.length; showQuote(); }
+
+function copyQ() {
+  const q = pool[idx % pool.length];
+  navigator.clipboard.writeText(`"${q.text}" — ${q.author}`);
+  const b = document.getElementById('copybtn');
+  b.textContent = 'Copied!'; b.classList.add('copied');
+  setTimeout(()=>{ b.textContent='Copy'; b.classList.remove('copied'); }, 1800);
+}
+
+function renderHist() {
+  document.getElementById('history').innerHTML = hist.map((q,i)=>`
+    <div class="hist-item" onclick="loadHist(${i})">
+      <div class="hist-text">${q.text}</div>
+      <div class="hist-author">${q.author}</div>
+    </div>`).join('');
+}
+
+function loadHist(i) {
+  const q = hist[i];
+  document.getElementById('qtext').textContent = '\u201C' + q.text + '\u201D';
+  document.getElementById('qauthor').textContent = q.author;
+  document.getElementById('qtag').textContent = q.cat;
+}
+
+shuffle(pool); showQuote();
+</script>
+</body>
+</html>

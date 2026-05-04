@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Feedback System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c94040;
+    --accent-light: #e8a0a0;
+    --muted: #8a8070;
+    --border: #d4cdc0;
+    --gold: #c8a84b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 80px;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(200,168,75,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(201,64,64,0.06) 0%, transparent 60%);
+  }
+
+  /* ─── Header ─────────────────────────────── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown .6s ease both;
+  }
+  .page-header .eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .page-header p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* ─── Layout ──────────────────────────────── */
+  .layout {
+    display: flex;
+    gap: 32px;
+    width: 100%;
+    max-width: 1000px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* ─── Card ────────────────────────────────── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 36px 32px;
+    box-shadow: 4px 4px 0 var(--cream);
+    flex: 1 1 340px;
+    animation: fadeUp .5s ease both;
+  }
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 span.dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* ─── Form ────────────────────────────────── */
+  .form-group { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input[type="text"], input[type="email"], select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201,64,64,.12);
+  }
+  textarea { resize: vertical; min-height: 100px; }
+
+  /* ─── Star Rating ─────────────────────────── */
+  .stars {
+    display: flex;
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .stars input { display: none; }
+  .stars label {
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--border);
+    transition: color .15s, transform .15s;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 28px;
+  }
+  .stars label:hover,
+  .stars label:hover ~ label { color: var(--border); }
+  .stars input:checked ~ label { color: var(--border); }
+
+  /* Reverse trick for CSS-only star fill */
+  .stars { flex-direction: row-reverse; justify-content: flex-end; }
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label { color: var(--gold) !important; }
+  .stars label:hover,
+  .stars input:checked + label ~ label { color: var(--gold) !important; }
+
+  /* Simple JS-driven coloring via data-active */
+  .star { font-size: 28px; cursor: pointer; color: var(--border); transition: color .15s, transform .15s; user-select: none; }
+  .star:hover, .star.active { color: var(--gold); transform: scale(1.15); }
+
+  .star-row { display: flex; gap: 6px; padding: 4px 0; }
+  .rating-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ─── Category chips ─────────────────────── */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ─── Submit Button ───────────────────────── */
+  .btn-submit {
+    width: 100%;
+    padding: 13px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    margin-top: 8px;
+  }
+  .btn-submit:hover { background: var(--accent); }
+  .btn-submit:active { transform: scale(.98); }
+
+  /* ─── Toast ───────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 28px;
+    border-radius: 3px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ─── Dashboard Card ─────────────────────── */
+  .dashboard { flex: 1 1 280px; animation: fadeUp .5s .1s ease both; }
+  .stat-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stat-box {
+    flex: 1;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 16px 12px;
+    border-radius: 2px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-box .lbl {
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ─── Feedback List ─────────────────────── */
+  #feedback-list { display: flex; flex-direction: column; gap: 12px; max-height: 460px; overflow-y: auto; }
+  #feedback-list::-webkit-scrollbar { width: 4px; }
+  #feedback-list::-webkit-scrollbar-track { background: var(--cream); }
+  #feedback-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .fb-item {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 16px;
+    border-radius: 2px;
+    animation: fadeUp .35s ease both;
+    position: relative;
+  }
+  .fb-item .fb-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .fb-item .fb-name { font-weight: 500; font-size: 14px; }
+  .fb-item .fb-stars { color: var(--gold); font-size: 13px; letter-spacing: 1px; }
+  .fb-item .fb-cat {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .fb-item .fb-msg { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .fb-item .fb-del {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border);
+    font-size: 16px;
+    transition: color .15s;
+  }
+  .fb-item .fb-del:hover { color: var(--accent); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .empty-state .icon { font-size: 2.5rem; display: block; margin-bottom: 8px; opacity: .4; }
+
+  /* ─── Animations ──────────────────────────── */
+  @keyframes fadeDown {
+    from { opacity:0; transform: translateY(-16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ─── Responsive ──────────────────────────── */
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; }
+    .card, .dashboard { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">Customer Feedback</p>
+  <h1>Tell Us What You Think</h1>
+  <p>Your feedback helps us improve. Every word counts.</p>
+</header>
+
+<div class="layout">
+
+  <!-- ── Form Card ── -->
+  <div class="card" style="animation-delay:.05s">
+    <h2><span class="dot"></span> Submit Feedback</h2>
+
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="f-name" placeholder="e.g. Priya Sharma" />
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="f-email" placeholder="you@example.com" />
+    </div>
+
+    <div class="form-group">
+      <label>Category</label>
+      <div class="chip-group" id="chip-group">
+        <button class="chip selected" data-val="General">General</button>
+        <button class="chip" data-val="Product">Product</button>
+        <button class="chip" data-val="Support">Support</button>
+        <button class="chip" data-val="Billing">Billing</button>
+        <button class="chip" data-val="Other">Other</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Overall Rating</label>
+      <div class="star-row" id="star-row">
+        <span class="star" data-val="1">★</span>
+        <span class="star" data-val="2">★</span>
+        <span class="star" data-val="3">★</span>
+        <span class="star" data-val="4">★</span>
+        <span class="star" data-val="5">★</span>
+      </div>
+      <div class="rating-label" id="rating-label">Click to rate</div>
+    </div>
+
+    <div class="form-group">
+      <label>Message</label>
+      <textarea id="f-msg" placeholder="Share your thoughts, suggestions, or experience…"></textarea>
+    </div>
+
+    <button class="btn-submit" onclick="submitFeedback()">Submit Feedback →</button>
+  </div>
+
+  <!-- ── Dashboard Card ── -->
+  <div class="card dashboard">
+    <h2><span class="dot" style="background:var(--gold)"></span> Submissions</h2>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="num" id="stat-total">0</div>
+        <div class="lbl">Total</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" id="stat-avg">—</div>
+        <div class="lbl">Avg Rating</div>
+      </div>
+    </div>
+
+    <div id="feedback-list">
+      <div class="empty-state">
+        <span class="icon">📭</span>
+        No feedback yet.<br>Be the first to share!
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── State ──────────────────────────────────
+  let feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+  let selectedRating = 0;
+  let selectedCategory = 'General';
+  const ratingLabels = ['','Poor','Fair','Good','Very Good','Excellent'];
+
+  // ── Stars ──────────────────────────────────
+  const stars = document.querySelectorAll('.star');
+  stars.forEach(s => {
+    s.addEventListener('mouseover', () => highlightStars(+s.dataset.val));
+    s.addEventListener('mouseout',  () => highlightStars(selectedRating));
+    s.addEventListener('click', () => {
+      selectedRating = +s.dataset.val;
+      highlightStars(selectedRating);
+      document.getElementById('rating-label').textContent = ratingLabels[selectedRating];
+    });
+  });
+
+  function highlightStars(n) {
+    stars.forEach(s => s.classList.toggle('active', +s.dataset.val <= n));
+  }
+
+  // ── Chips ──────────────────────────────────
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      selectedCategory = c.dataset.val;
+    });
+  });
+
+  // ── Submit ─────────────────────────────────
+  function submitFeedback() {
+    const name = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const msg  = document.getElementById('f-msg').value.trim();
+
+    if (!name) { showToast('Please enter your name.'); return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Invalid email address.'); return; }
+    if (!selectedRating) { showToast('Please select a rating.'); return; }
+    if (!msg) { showToast('Please write a message.'); return; }
+
+    const entry = {
+      id: Date.now(),
+      name,
+      email: email || '—',
+      category: selectedCategory,
+      rating: selectedRating,
+      message: msg,
+      date: new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+    };
+
+    feedbacks.unshift(entry);
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    renderAll();
+    resetForm();
+    showToast('✓ Feedback submitted. Thank you!');
+  }
+
+  // ── Reset ──────────────────────────────────
+  function resetForm() {
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-msg').value = '';
+    selectedRating = 0;
+    highlightStars(0);
+    document.getElementById('rating-label').textContent = 'Click to rate';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.chip[data-val="General"]').classList.add('selected');
+    selectedCategory = 'General';
+  }
+
+  // ── Render ─────────────────────────────────
+  function renderAll() {
+    renderStats();
+    renderList();
+  }
+
+  function renderStats() {
+    document.getElementById('stat-total').textContent = feedbacks.length;
+    if (feedbacks.length === 0) {
+      document.getElementById('stat-avg').textContent = '—';
+    } else {
+      const avg = feedbacks.reduce((s, f) => s + f.rating, 0) / feedbacks.length;
+      document.getElementById('stat-avg').textContent = avg.toFixed(1);
+    }
+  }
+
+  function renderList() {
+    const list = document.getElementById('feedback-list');
+    if (feedbacks.length === 0) {
+      list.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No feedback yet.<br>Be the first to share!</div>`;
+      return;
+    }
+    list.innerHTML = feedbacks.map(f => `
+      <div class="fb-item" id="item-${f.id}">
+        <div class="fb-top">
+          <span class="fb-name">${esc(f.name)}</span>
+          <span class="fb-stars">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</span>
+        </div>
+        <span class="fb-cat">${esc(f.category)}</span>
+        <p class="fb-msg">${esc(f.message)}</p>
+        <small style="color:var(--border);font-size:11px;display:block;margin-top:6px">${f.date}</small>
+        <button class="fb-del" onclick="deleteFeedback(${f.id})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  // ── Delete ─────────────────────────────────
+  function deleteFeedback(id) {
+    feedbacks = feedbacks.filter(f => f.id !== id);
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    renderAll();
+  }
+
+  // ── Toast ──────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Helpers ────────────────────────────────
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Init ───────────────────────────────────
+  renderAll();
+</script>
+</body>
+</html>

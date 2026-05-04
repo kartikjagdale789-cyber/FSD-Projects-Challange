@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TweetForge — Fake Tweet Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --accent: #f59e0b;
+    --accent2: #ef4444;
+    --blue: #1d9bf0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100vh; }
+
+  /* Diagonal split layout */
+  .layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+
+  /* Left panel - form */
+  .form-panel {
+    background: var(--text); color: #fff;
+    padding: 2.5rem; display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .form-panel::before {
+    content: ''; position: absolute; top: 0; right: -60px; bottom: 0;
+    width: 120px; background: var(--bg); transform: skewX(-4deg);
+    z-index: 1;
+  }
+  .form-content { position: relative; z-index: 2; }
+
+  .brand { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 2rem; }
+  .brand span { color: var(--accent); }
+  .disclaimer {
+    font-size: 0.65rem; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.3);
+    padding: .5rem .9rem; border-radius: 4px; color: #fcd34d; margin-bottom: 2rem;
+    letter-spacing: .04em; line-height: 1.5;
+  }
+
+  label { font-size: 0.7rem; letter-spacing: .1em; text-transform: uppercase; color: #9ca3af; display: block; margin-bottom: .4rem; }
+  .field { margin-bottom: 1.1rem; }
+  input[type=text], textarea {
+    width: 100%; font-family: 'Inter', sans-serif; font-size: 0.88rem;
+    padding: .7rem 1rem; border-radius: 6px;
+    border: 1px solid #374151; background: #1f2937;
+    color: #fff; outline: none; transition: border-color .15s;
+  }
+  input[type=text]:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: none; }
+  .char-bar { font-size: 0.7rem; text-align: right; color: #6b7280; margin-top: .3rem; }
+  .char-bar.warn { color: #f59e0b; }
+  .char-bar.over { color: #ef4444; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .theme-row { display: flex; gap: 8px; }
+  .theme-btn {
+    flex: 1; font-size: 0.72rem; font-family: 'Inter', sans-serif;
+    padding: 7px 6px; border-radius: 5px;
+    border: 1px solid #374151; background: #1f2937;
+    color: #9ca3af; cursor: pointer; font-weight: 500; transition: all .15s;
+    letter-spacing: .04em;
+  }
+  .theme-btn.active { background: var(--accent); color: var(--text); border-color: var(--accent); }
+
+  .dl-btn {
+    width: 100%; margin-top: 1.5rem; font-family: 'Syne', sans-serif; font-size: 0.9rem;
+    font-weight: 700; padding: .9rem; border-radius: 6px;
+    background: var(--accent); color: var(--text);
+    border: none; cursor: pointer; letter-spacing: .04em;
+    transition: opacity .15s;
+  }
+  .dl-btn:hover { opacity: .9; }
+
+  /* Right panel - preview */
+  .preview-panel {
+    background: var(--bg); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 3rem 3rem 3rem 4rem;
+  }
+  .preview-label {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: .15em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 1.5rem; align-self: flex-start;
+  }
+
+  /* Tweet card */
+  .tweet-card {
+    width: 100%; max-width: 500px; border: 1px solid #e1e8ed;
+    border-radius: 16px; padding: 16px; background: #fff;
+    font-family: 'Inter', sans-serif; box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    transition: background .3s, border-color .3s;
+  }
+  .tweet-card.dark { background: #15202b; border-color: #38444d; }
+  .tweet-card.dim { background: #192734; border-color: #38444d; }
+
+  .tw-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .tw-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--blue); display: flex; align-items: center;
+    justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .tw-names { flex: 1; }
+  .tw-displayname { font-weight: 700; font-size: 15px; color: #0f1419; display: flex; align-items: center; gap: 4px; }
+  .tweet-card.dark .tw-displayname, .tweet-card.dim .tw-displayname { color: #e7e9ea; }
+  .tw-username { font-size: 14px; color: #536471; }
+  .tweet-card.dark .tw-username, .tweet-card.dim .tw-username { color: #8b98a5; }
+  .tw-verified { width: 18px; height: 18px; background: var(--blue); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+  .tw-verified::after { content: '✓'; color: #fff; font-size: 10px; font-weight: 700; }
+  .tw-x { color: #536471; font-size: 18px; font-weight: 900; margin-left: auto; }
+  .tweet-card.dark .tw-x, .tweet-card.dim .tw-x { color: #8b98a5; }
+
+  .tw-body { font-size: 17px; line-height: 1.55; color: #0f1419; margin-bottom: 14px; word-break: break-word; }
+  .tweet-card.dark .tw-body, .tweet-card.dim .tw-body { color: #e7e9ea; }
+  .tw-body .mention { color: var(--blue); }
+
+  .tw-meta { font-size: 14px; color: #536471; margin-bottom: 12px; }
+  .tweet-card.dark .tw-meta, .tweet-card.dim .tw-meta { color: #8b98a5; }
+  .tw-hr { border: none; border-top: 1px solid #eff3f4; margin: 0 0 10px; }
+  .tweet-card.dark .tw-hr, .tweet-card.dim .tw-hr { border-top-color: #38444d; }
+
+  .tw-stats { display: flex; gap: 20px; font-size: 14px; color: #536471; margin-bottom: 10px; }
+  .tweet-card.dark .tw-stats, .tweet-card.dim .tw-stats { color: #8b98a5; }
+  .tw-stats b { color: #0f1419; font-weight: 700; }
+  .tweet-card.dark .tw-stats b, .tweet-card.dim .tw-stats b { color: #e7e9ea; }
+
+  .tw-actions { display: flex; justify-content: space-between; }
+  .tw-action {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 13px; color: #536471; cursor: pointer;
+    padding: 5px 8px; border-radius: 999px; transition: all .15s;
+  }
+  .tweet-card.dark .tw-action, .tweet-card.dim .tw-action { color: #8b98a5; }
+  .tw-action:hover { background: rgba(29,155,240,.1); color: var(--blue); }
+  .tw-action.like:hover { color: #f91880; background: rgba(249,24,128,.1); }
+  .tw-action.rt:hover { color: #00ba7c; background: rgba(0,186,124,.1); }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .form-panel::before { display: none; }
+    .preview-panel { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="form-panel">
+    <div class="form-content">
+      <div class="brand">Tweet<span>Forge</span></div>
+      <div class="disclaimer">⚠ For entertainment purposes only. Do not use to mislead or deceive.</div>
+
+      <div class="field">
+        <label>Display name</label>
+        <input type="text" id="dname" value="Elon Musk" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="uname" value="elonmusk" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Tweet content</label>
+        <textarea id="ttext" rows="4" oninput="update()">The thing I love most about building the future is that nobody can stop an idea whose time has come. 🚀</textarea>
+        <div class="char-bar" id="cbar">95 / 280</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Likes</label>
+          <input type="text" id="likes" value="84.2K" oninput="update()">
+        </div>
+        <div class="field">
+          <label>Reposts</label>
+          <input type="text" id="rts" value="12.5K" oninput="update()">
+        </div>
+        <div class="field">
+          <label>Replies</label>
+          <input type="text" id="reps" value="3.1K" oninput="update()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Time</label>
+        <input type="text" id="ttime" value="10:42 AM · Mar 18, 2026" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Avatar emoji</label>
+        <input type="text" id="avemoji" value="🦅" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Theme</label>
+        <div class="theme-row">
+          <button class="theme-btn active" onclick="setTheme('light',this)">Light</button>
+          <button class="theme-btn" onclick="setTheme('dark',this)">Dark</button>
+          <button class="theme-btn" onclick="setTheme('dim',this)">Dim</button>
+        </div>
+      </div>
+      <button class="dl-btn" onclick="downloadTweet()">Download Screenshot ↓</button>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-label">Live Preview</div>
+    <div class="tweet-card" id="tweet">
+      <div class="tw-header">
+        <div class="tw-avatar" id="av">🦅</div>
+        <div class="tw-names">
+          <div class="tw-displayname" id="dn-out">Elon Musk <span class="tw-verified"></span></div>
+          <div class="tw-username" id="un-out">@elonmusk</div>
+        </div>
+        <div class="tw-x">✕</div>
+      </div>
+      <div class="tw-body" id="tb-out"></div>
+      <div class="tw-meta" id="tm-out">10:42 AM · Mar 18, 2026 · <strong>X</strong></div>
+      <hr class="tw-hr">
+      <div class="tw-stats">
+        <span><b id="rts-out">12.5K</b> Reposts</span>
+        <span><b id="likes-out">84.2K</b> Likes</span>
+        <span><b id="reps-out">3.1K</b> Replies</span>
+      </div>
+      <hr class="tw-hr">
+      <div class="tw-actions">
+        <div class="tw-action">💬 <span id="reps2-out">3.1K</span></div>
+        <div class="tw-action rt">🔁 <span id="rts2-out">12.5K</span></div>
+        <div class="tw-action like">❤️ <span id="likes2-out">84.2K</span></div>
+        <div class="tw-action">📤</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function update() {
+  const dn = document.getElementById('dname').value || 'Name';
+  const un = document.getElementById('uname').value || 'username';
+  const txt = document.getElementById('ttext').value;
+  const likes = document.getElementById('likes').value;
+  const rts = document.getElementById('rts').value;
+  const reps = document.getElementById('reps').value;
+  const time = document.getElementById('ttime').value;
+  const em = document.getElementById('avemoji').value || '😀';
+  const len = txt.length;
+  const cb = document.getElementById('cbar');
+  cb.textContent = len + ' / 280';
+  cb.className = 'char-bar' + (len>280?' over':len>240?' warn':'');
+  document.getElementById('dn-out').innerHTML = dn + ' <span class="tw-verified"></span>';
+  document.getElementById('un-out').textContent = '@' + un;
+  document.getElementById('tb-out').innerHTML = txt.replace(/@\w+/g,'<span class="mention">$&</span>').replace(/#\w+/g,'<span class="mention">$&</span>');
+  document.getElementById('tm-out').innerHTML = time + ' · <strong>X</strong>';
+  document.getElementById('likes-out').textContent = likes;
+  document.getElementById('likes2-out').textContent = likes;
+  document.getElementById('rts-out').textContent = rts;
+  document.getElementById('rts2-out').textContent = rts;
+  document.getElementById('reps-out').textContent = reps;
+  document.getElementById('reps2-out').textContent = reps;
+  document.getElementById('av').textContent = em;
+}
+function setTheme(t, btn) {
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const card = document.getElementById('tweet');
+  card.className = 'tweet-card';
+  if(t!=='light') card.classList.add(t);
+}
+function downloadTweet() { alert('In a full deployment, this would use html2canvas to capture the tweet as an image!'); }
+update();
+</script>
+</body>
+</html>

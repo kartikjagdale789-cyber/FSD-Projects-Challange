@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cambio — Currency Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e8f4f0;
+    --surface: #ffffff;
+    --card: #f0faf6;
+    --border: #c8e6d8;
+    --text: #0d2b1e;
+    --muted: #5a8270;
+    --accent: #00875a;
+    --accent2: #00c07a;
+    --light-accent: #d4f0e3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Animated background blobs */
+  .blob1, .blob2 {
+    position: fixed; border-radius: 50%; filter: blur(80px); opacity: .35; pointer-events: none; z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+  .blob1 { width: 500px; height: 500px; background: #00c07a; top: -150px; right: -100px; }
+  .blob2 { width: 400px; height: 400px; background: #00875a; bottom: -100px; left: -80px; animation-delay: -4s; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
+
+  .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  header { text-align: center; margin-bottom: 3rem; }
+  .logo { font-size: 2.8rem; font-weight: 700; letter-spacing: -.03em; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 1rem; font-weight: 300; margin-top: .4rem; }
+
+  .main-card {
+    background: var(--surface); border-radius: 24px;
+    padding: 2.5rem; margin-bottom: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0,135,90,.12), 0 2px 8px rgba(0,0,0,.04);
+    border: 1px solid var(--border);
+  }
+
+  .currency-block { margin-bottom: .5rem; }
+  .currency-label { font-size: 0.75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .6rem; }
+  .currency-input-row {
+    display: flex; align-items: center;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 16px; overflow: hidden; transition: border-color .2s;
+  }
+  .currency-input-row:focus-within { border-color: var(--accent); }
+  .currency-select-wrap { display: flex; align-items: center; gap: 10px; padding: 1rem 1.2rem; border-right: 1.5px solid var(--border); min-width: 160px; cursor: pointer; }
+  .flag { font-size: 1.6rem; }
+  .curr-info { display: flex; flex-direction: column; }
+  .curr-code { font-size: 1rem; font-weight: 600; }
+  .curr-name { font-size: 0.7rem; color: var(--muted); font-weight: 400; }
+  select { opacity: 0; position: absolute; width: 160px; height: 60px; cursor: pointer; }
+  .amount-field {
+    flex: 1; font-family: 'Outfit', sans-serif; font-size: 1.8rem;
+    font-weight: 300; border: none; outline: none; background: transparent;
+    color: var(--text); padding: 1rem 1.5rem; text-align: right; min-width: 0;
+  }
+  .amount-field::placeholder { color: var(--border); }
+
+  .swap-row { display: flex; justify-content: center; align-items: center; padding: .7rem 0; gap: 1rem; }
+  .swap-btn {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--accent);
+    border: none; cursor: pointer; color: #fff; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s; box-shadow: 0 4px 12px rgba(0,135,90,.3);
+  }
+  .swap-btn:hover { transform: rotate(180deg) scale(1.1); background: var(--text); }
+  .rate-info { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
+
+  .result-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .result-label { font-size: 0.75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+  .result-amount { font-size: 3.5rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .result-sub { font-size: 0.9rem; color: var(--muted); margin-top: .4rem; font-weight: 300; }
+
+  .quick-amounts { display: flex; gap: 8px; margin: 1.5rem 0 0; flex-wrap: wrap; }
+  .qa {
+    font-size: 0.8rem; font-weight: 500; padding: .5rem 1.1rem;
+    border-radius: 999px; border: 1.5px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all .15s; font-family: 'Outfit', sans-serif;
+  }
+  .qa:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--surface); border-radius: 16px; padding: 1.3rem 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+  }
+  .stat-label { font-size: 0.72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
+  .stat-value { font-size: 1.5rem; font-weight: 600; color: var(--text); }
+  .stat-sub { font-size: 0.78rem; color: var(--muted); margin-top: .2rem; }
+
+  .popular-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .pop-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1rem; cursor: pointer;
+    transition: all .15s;
+  }
+  .pop-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,135,90,.15); }
+  .pop-pair { font-size: 0.72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: .3rem; }
+  .pop-flags { font-size: 1.2rem; }
+  .pop-rate { font-size: 1rem; font-weight: 600; color: var(--text); margin-top: .2rem; }
+  .pop-change { font-size: 0.72rem; color: var(--accent); }
+
+  footer { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 2rem; }
+
+  @media (max-width: 600px) {
+    .popular-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    .result-amount { font-size: 2.5rem; }
+    .amount-field { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="blob1"></div>
+<div class="blob2"></div>
+
+<div class="container">
+  <header>
+    <div class="logo">Cam<span>bio</span></div>
+    <div class="tagline">Real-time currency conversion at your fingertips</div>
+  </header>
+
+  <div class="main-card">
+    <div class="currency-block">
+      <div class="currency-label">From</div>
+      <div class="currency-input-row">
+        <div class="currency-select-wrap" style="position:relative">
+          <span class="flag" id="flag1">🇺🇸</span>
+          <div class="curr-info">
+            <span class="curr-code" id="code1">USD</span>
+            <span class="curr-name" id="name1">US Dollar</span>
+          </div>
+          <select id="from" onchange="selChanged('from')">
+            <option value="USD" selected>USD</option><option value="EUR">EUR</option>
+            <option value="GBP">GBP</option><option value="INR">INR</option>
+            <option value="JPY">JPY</option><option value="CAD">CAD</option>
+            <option value="AUD">AUD</option><option value="CHF">CHF</option>
+            <option value="CNY">CNY</option><option value="AED">AED</option>
+            <option value="SGD">SGD</option><option value="BRL">BRL</option>
+          </select>
+        </div>
+        <input class="amount-field" type="number" id="amount" value="100" oninput="convert()" placeholder="Amount">
+      </div>
+    </div>
+
+    <div class="swap-row">
+      <span class="rate-info" id="rate-info">1 USD = 83.60 INR</span>
+      <button class="swap-btn" onclick="swap()">⇅</button>
+    </div>
+
+    <div class="currency-block">
+      <div class="currency-label">To</div>
+      <div class="currency-input-row" style="background:#f0faf6">
+        <div class="currency-select-wrap" style="position:relative">
+          <span class="flag" id="flag2">🇮🇳</span>
+          <div class="curr-info">
+            <span class="curr-code" id="code2">INR</span>
+            <span class="curr-name" id="name2">Indian Rupee</span>
+          </div>
+          <select id="to" onchange="selChanged('to')">
+            <option value="USD">USD</option><option value="EUR">EUR</option>
+            <option value="GBP">GBP</option><option value="INR" selected>INR</option>
+            <option value="JPY">JPY</option><option value="CAD">CAD</option>
+            <option value="AUD">AUD</option><option value="CHF">CHF</option>
+            <option value="CNY">CNY</option><option value="AED">AED</option>
+            <option value="SGD">SGD</option><option value="BRL">BRL</option>
+          </select>
+        </div>
+        <span class="amount-field" id="result" style="display:block;cursor:default">8,360.00</span>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <div class="result-label">Converted amount</div>
+      <div class="result-amount" id="big-result">₹ 8,360.00</div>
+      <div class="result-sub" id="result-sub">100 USD = 8,360.00 INR · Rates as of Mar 2026</div>
+    </div>
+
+    <div class="quick-amounts">
+      <button class="qa" onclick="setAmt(10)">10</button>
+      <button class="qa" onclick="setAmt(50)">50</button>
+      <button class="qa" onclick="setAmt(100)">100</button>
+      <button class="qa" onclick="setAmt(500)">500</button>
+      <button class="qa" onclick="setAmt(1000)">1,000</button>
+      <button class="qa" onclick="setAmt(10000)">10,000</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="stat-card">
+      <div class="stat-label">Exchange Rate</div>
+      <div class="stat-value" id="stat-rate">83.60</div>
+      <div class="stat-sub" id="stat-pair">USD / INR</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Inverse Rate</div>
+      <div class="stat-value" id="stat-inv">0.01197</div>
+      <div class="stat-sub" id="stat-inv-pair">INR / USD</div>
+    </div>
+  </div>
+
+  <div class="popular-grid">
+  </div>
+
+  <footer>Exchange rates for reference only. Last updated March 2026.</footer>
+</div>
+
+<script>
+const data = {
+  USD: { name:'US Dollar', flag:'🇺🇸', symbol:'$', rate:1 },
+  EUR: { name:'Euro', flag:'🇪🇺', symbol:'€', rate:0.921 },
+  GBP: { name:'British Pound', flag:'🇬🇧', symbol:'£', rate:0.788 },
+  INR: { name:'Indian Rupee', flag:'🇮🇳', symbol:'₹', rate:83.60 },
+  JPY: { name:'Japanese Yen', flag:'🇯🇵', symbol:'¥', rate:149.50 },
+  CAD: { name:'Canadian Dollar', flag:'🇨🇦', symbol:'CA$', rate:1.356 },
+  AUD: { name:'Australian Dollar', flag:'🇦🇺', symbol:'A$', rate:1.531 },
+  CHF: { name:'Swiss Franc', flag:'🇨🇭', symbol:'CHF', rate:0.896 },
+  CNY: { name:'Chinese Yuan', flag:'🇨🇳', symbol:'¥', rate:7.238 },
+  AED: { name:'UAE Dirham', flag:'🇦🇪', symbol:'AED', rate:3.673 },
+  SGD: { name:'Singapore Dollar', flag:'🇸🇬', symbol:'S$', rate:1.345 },
+  BRL: { name:'Brazilian Real', flag:'🇧🇷', symbol:'R$', rate:5.12 },
+};
+
+const popular = [['USD','EUR'],['USD','GBP'],['USD','INR'],['EUR','GBP'],['USD','JPY'],['GBP','INR']];
+const pg = document.querySelector('.popular-grid');
+popular.forEach(([a,b]) => {
+  const r = (data[b].rate / data[a].rate).toFixed(4);
+  const d = document.createElement('div'); d.className = 'pop-card';
+  d.innerHTML = `<div class="pop-flags">${data[a].flag} → ${data[b].flag}</div><div class="pop-pair">${a} / ${b}</div><div class="pop-rate">${r}</div><div class="pop-change">View pair →</div>`;
+  d.onclick = () => { document.getElementById('from').value=a; document.getElementById('to').value=b; selChanged('from'); selChanged('to'); convert(); };
+  pg.appendChild(d);
+});
+
+function selChanged(which) {
+  const sel = document.getElementById(which).value;
+  const d = data[sel];
+  document.getElementById('flag'+(which==='from'?1:2)).textContent = d.flag;
+  document.getElementById('code'+(which==='from'?1:2)).textContent = sel;
+  document.getElementById('name'+(which==='from'?1:2)).textContent = d.name;
+  convert();
+}
+
+function convert() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const amt = parseFloat(document.getElementById('amount').value) || 0;
+  const rate = data[to].rate / data[from].rate;
+  const res = amt * rate;
+  const fmtd = res >= 1000 ? res.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : res.toFixed(2);
+  document.getElementById('result').textContent = fmtd;
+  document.getElementById('big-result').textContent = data[to].symbol + ' ' + fmtd;
+  document.getElementById('result-sub').textContent = `${amt.toLocaleString()} ${from} = ${fmtd} ${to} · Rates as of Mar 2026`;
+  document.getElementById('rate-info').textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+  document.getElementById('stat-rate').textContent = rate.toFixed(4);
+  document.getElementById('stat-pair').textContent = from + ' / ' + to;
+  document.getElementById('stat-inv').textContent = (1/rate).toFixed(5);
+  document.getElementById('stat-inv-pair').textContent = to + ' / ' + from;
+}
+
+function swap() {
+  const f = document.getElementById('from').value;
+  const t = document.getElementById('to').value;
+  document.getElementById('from').value = t;
+  document.getElementById('to').value = f;
+  selChanged('from'); selChanged('to'); convert();
+}
+function setAmt(v) { document.getElementById('amount').value = v; convert(); }
+convert();
+</script>
+</body>
+</html>
